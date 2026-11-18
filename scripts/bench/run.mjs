@@ -42,7 +42,7 @@ const opt = (name, def) => {
 };
 const flag = name => argv.includes(`--${name}`);
 
-const SCENARIOS = ['S0', 'S1', 'S1u', 'S2', 'S3'];
+const SCENARIOS = ['S0', 'S1', 'S1u', 'S2', 'S3', 'S5'];
 const mode = opt('mode', 'sequence');
 const seq = mode === 'sequence';
 const label = opt('label');
@@ -532,6 +532,7 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
       S1: Math.min(fgOwn ?? 0, notMin ?? 0),
       S2: Math.min(fgOwn ?? 0, notMin ?? 0),
       S3: Math.min(fgOwn ?? 0, notMin ?? 0),
+      S5: Math.min(fgOwn ?? 0, notMin ?? 0),
       // S1u: main window visible but not focused (whatever else holds the foreground)
       S1u: frac(w => !w.focused && w.visible && !w.minimized),
     }[seg.scenario];

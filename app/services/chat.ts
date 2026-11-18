@@ -50,6 +50,13 @@ loadLazyEmotes();
   /*eslint-enable */
 }
 
+/**
+ * The chat page is a full platform website (Twitch/YouTube/… chat) in its own renderer
+ * process (~100–200 MB). It is destroyed this long after it was last shown, and re-created
+ * when shown again (docs/rework, H26). The grace period avoids reloads on quick toggles.
+ */
+const CHAT_DESTROY_DELAY_MS = 60 * 1000;
+
 @InitAfter('StreamingService')
 export class ChatService extends Service {
   @Inject() userService: UserService;
@@ -64,6 +71,8 @@ export class ChatService extends Service {
   private chatUrl = '';
   private electronWindowId: number | null;
   private exposedHighlightApi = false;
+  private destroyTimer: ReturnType<typeof setTimeout> | null = null;
+  private settingsSubscription: { unsubscribe(): void } | null = null;
 
   init() {
     this.chatUrl = this.streamingService.views.chatUrl;
@@ -112,6 +121,7 @@ export class ChatService extends Service {
   }
 
   async mountChat(electronWindowId: number) {
+    this.cancelScheduledDestroy();
     if (!this.chatView) this.initChat();
     this.electronWindowId = electronWindowId;
     const win = remote.BrowserWindow.fromId(electronWindowId);
@@ -134,6 +144,37 @@ export class ChatService extends Service {
     const win = remote.BrowserWindow.fromId(this.electronWindowId);
     if (this.chatView && win) win.removeBrowserView(this.chatView);
     this.electronWindowId = null;
+    this.scheduleDestroy();
+  }
+
+  private scheduleDestroy() {
+    this.cancelScheduledDestroy();
+    this.destroyTimer = setTimeout(() => {
+      this.destroyTimer = null;
+      if (!this.electronWindowId) this.destroyChat(); // still not shown
+    }, CHAT_DESTROY_DELAY_MS);
+  }
+
+  private cancelScheduledDestroy() {
+    if (this.destroyTimer) clearTimeout(this.destroyTimer);
+    this.destroyTimer = null;
+  }
+
+  /** Closes the chat page and frees its renderer process. */
+  private destroyChat() {
+    this.cancelScheduledDestroy();
+    this.settingsSubscription?.unsubscribe();
+    this.settingsSubscription = null;
+    this.exposedHighlightApi = false;
+    const view = this.chatView;
+    this.chatView = null;
+    const contents = view?.webContents;
+    if (contents && !contents.isDestroyed()) {
+      // Destroy like closing a window; force-destroy if close didn't (same as platform apps).
+      contents.close();
+      // @ts-ignore: undocumented, see container-manager.ts destroyContainer
+      if (!contents.isDestroyed()) contents.destroy();
+    }
   }
 
   private initChat() {
@@ -160,7 +201,8 @@ export class ChatService extends Service {
     this.bindWindowListener();
     this.bindDomReadyListener();
 
-    this.customizationService.settingsChanged.subscribe(changed => {
+    this.settingsSubscription?.unsubscribe();
+    this.settingsSubscription = this.customizationService.settingsChanged.subscribe(changed => {
       this.handleSettingsChanged(changed);
     });
 
@@ -168,10 +210,10 @@ export class ChatService extends Service {
   }
 
   private deinitChat() {
-    // @ts-ignore: typings are incorrect
     this.unmountChat();
-    this.exposedHighlightApi = false;
-    this.chatView = null;
+    // Close the page instead of only dropping the reference — that leaked the whole
+    // renderer process on every logout (docs/rework, H26).
+    this.destroyChat();
   }
 
   private async loadUrl() {

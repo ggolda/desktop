@@ -226,3 +226,24 @@ learned, where we stopped, what's next.
   measurable effect; no-GPU-raster worse. Toggles reverted. GPU process noise ±10–20 MB.
 - Remaining memory work is code: main window bundle diet (themes, lazy-loaded dialog libs), worker
   trims / services out of Chromium.
+
+## 2026-11-18 — Streaming memory (owner: 600–650 MB when streaming) — analysis, no benchmark
+
+- Cause: live dock auto-expands on stream start → platform chat website in a BrowserView (own
+  renderer). Never destroyed, leaked on logout; multistream adds a second, unthrottled chat page.
+- Changes (typecheck only, not run): ChatService/RestreamService destroy the chat page 60 s after
+  it was last shown; ChatService closes it on logout and tracks its settings subscription; LiveDock
+  StreamTimer 200 ms → 1 s. Trade-off: re-opening the chat after > 60 s hidden reloads it (platform
+  chats show only new messages after reload).
+- Still costly while the chat is visible: it's a full website. Options for later: native chat UI
+  from platform APIs (big), lighter chat page, emulate prefers-reduced-motion for animated emotes.
+- Next: S4 (streaming) scenario in the harness to measure — needs a safe streaming target.
+
+## 2026-11-18 — Chat scenario, chapter 1 closed
+
+- S5 (live dock + chat) on the Twitch account: chat page +159 MB (118 MB page, ~22 MB GPU, 12 MB
+  iframe renderer); quiet chat ≈ 0 CPU. Streaming CPU must come from live chat traffic/animated
+  emotes, meters, stats — busy-chat test not done yet.
+- Found `video.ts` preview-position polling (500 ms, also tracks position — kept).
+- Owner field report: production ~2.6 GB vs PoC ~600 MB while streaming with chat.
+- Wrote [POC-REPORT.md](POC-REPORT.md) for the main team; chapter 1 ("minimal changes") closed.

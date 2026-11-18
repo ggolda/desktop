@@ -28,9 +28,9 @@ from the measurements: [performance-guidelines.md](performance-guidelines.md) (s
 
 | Field | Value |
 | --- | --- |
-| Current phase | **Phase 3 — fix loop** (first fix done as interim: ADR-0003 child window on demand, −100 MB) |
-| Last session | 2026-11-18 — worker-only bundle; recording scenario (S3) + logged-out fixture added; REC glow fixed (recording CPU 2.5 → 0.55 %) |
-| Next step | Clean benchmark of the worker-only bundle (laptop must be idle) + owner's manual test of the app (scenes, sources, recording, settings, widgets, chat, Go Live). Then: lean main window (themes out, lazy screens), GPU process extras |
+| Current phase | **Chapter 1 complete** (minimal-change fixes) → Phase 4 feasibility checkpoint: decide on architecture options with the team ([POC-REPORT.md](POC-REPORT.md) §5) |
+| Last session | 2026-11-18 — chat lifecycle, polling → ResizeObserver, chat scenario (S5); chapter 1 report written |
+| Next step | Share POC-REPORT.md with the team; decide which architecture options to pursue; optional remaining small wins (bundle diet, chat reduced motion, worker meter sampling) |
 | Blockers | none |
 | Latest baseline | [baseline.md](baseline.md) — **typical user: Electron ≈ 558 MB, idle CPU 0.77 % (0.28 % minimized)**; power user (18 apps): ≈ 1250 MB; native OBS ≈ 335 MB |
 | Best result so far | typical, preview off: Electron **~386–403 MB** WS; idle CPU **0.08 %** unfocused, **0.27 %** focused with meters moving ([meters2d](benchmarks/2026-11-18_SEQ_meters2d_1.json)); power user ~430 MB (before ascii_only) |
@@ -40,6 +40,7 @@ from the measurements: [performance-guidelines.md](performance-guidelines.md) (s
 | Doc | What it holds | Changes |
 | --- | --- | --- |
 | [README.md](README.md) | Mission, status board, working protocol | Every session |
+| [POC-REPORT.md](POC-REPORT.md) | **Shareable report of chapter 1** (minimal-change optimizations: findings, fixes, results, trade-offs, what's left) | At chapter end |
 | [goals.md](goals.md) | Exact target definitions, scenarios, open questions | Rarely (via ADR) |
 | [architecture-vision.md](architecture-vision.md) | **Parked draft** — ideas for the final stack/architecture phase; not the current plan | Final phase |
 | [roadmap.md](roadmap.md) | Phases, exit criteria, risks | When a phase completes or the plan changes |

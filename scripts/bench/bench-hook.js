@@ -151,10 +151,10 @@ function keepFocus() {
   if (!main || main.__benchKeepFocus) return;
   main.__benchKeepFocus = true;
   main.on('blur', () => {
-    if (!['S1', 'S2', 'S3'].includes(currentScenario) || refocusTimer) return;
+    if (!['S1', 'S2', 'S3', 'S5'].includes(currentScenario) || refocusTimer) return;
     refocusTimer = setTimeout(() => {
       refocusTimer = null;
-      if (!['S1', 'S2', 'S3'].includes(currentScenario) || main.isDestroyed() || main.isFocused()) return;
+      if (!['S1', 'S2', 'S3', 'S5'].includes(currentScenario) || main.isDestroyed() || main.isFocused()) return;
       main.minimize();
       setTimeout(() => {
         main.restore();
@@ -174,12 +174,26 @@ async function setRecording(on) {
   emit('recording', { on });
 }
 
+async function setLiveDock(expanded) {
+  const worker = findWindow('worker');
+  const info = await worker.webContents.executeJavaScript(
+    `(() => { const sm = window.servicesManager;
+      sm.getResource('CustomizationService').setSettings({ livedockCollapsed: ${!expanded} });
+      const auth = sm.getResource('UserService').state.auth;
+      return { primaryPlatform: auth && auth.primaryPlatform,
+               hasChatUrl: !!sm.getResource('StreamingService').views.chatUrl }; })()`,
+  );
+  emit('live-dock', { expanded, ...info });
+}
+
 // Moves the app from whatever state it is in into the target scenario.
 async function applyScenario(target) {
   const leavingS3 = currentScenario === 'S3' && target !== 'S3';
+  const leavingS5 = currentScenario === 'S5' && target !== 'S5';
   currentScenario = target;
   keepFocus();
   if (leavingS3) await setRecording(false);
+  if (leavingS5) await setLiveDock(false);
   const main = findWindow('main');
   if (target !== 'S0' && main.isMinimized()) main.restore();
   if (target === 'S1' && !previewDisabled) await setPreview(false);
@@ -200,6 +214,7 @@ async function applyScenario(target) {
   }
   if (target === 'S1u') openFocusWindow();
   if (target === 'S3') await setRecording(true); // S3 = S2 + recording
+  if (target === 'S5') await setLiveDock(true); // S5 = S2 + live dock expanded (chat visible)
   emit('scenario-applied', { scenario: target });
 }
 

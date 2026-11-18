@@ -12,37 +12,21 @@ export default function useBaseElement(
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
-  let sizeWatcherInterval = 0;
-  const sizeWatcherCallbacks: Function[] = [];
-
-  function addSizeWatcher(cb: Function) {
-    sizeWatcherCallbacks.push(cb);
-    if (sizeWatcherInterval) return;
-    sizeWatcherInterval = window.setInterval(() => {
-      sizeWatcherCallbacks.forEach(cb => cb());
-    }, 500);
-  }
-
-  function removeSizeWatcher(cb: Function) {
-    const idx = sizeWatcherCallbacks.findIndex(func => func === cb);
-    if (idx !== -1) sizeWatcherCallbacks.splice(idx, 1);
-    if (sizeWatcherCallbacks.length < 1) {
-      clearInterval(sizeWatcherInterval);
-      sizeWatcherInterval = 0;
-    }
-  }
-
+  // Size watching via ResizeObserver instead of a 500 ms polling interval per editor element
+  // (~13 wake-ups/s with all panels — docs/rework guidelines). Note: callers pass
+  // `containerRef.current`, which is still null on the first render, so (as before) this only
+  // observes when an element is passed at mount time — see hypotheses I4.
   useEffect(() => {
-    const sizeWatcher = () => {
-      if (!ref || !ref.getBoundingClientRect) return;
-      setHeight(ref.getBoundingClientRect().height);
-      setWidth(ref.getBoundingClientRect().width);
+    if (!ref || !ref.getBoundingClientRect) return;
+    const update = () => {
+      const rect = ref.getBoundingClientRect();
+      setHeight(rect.height);
+      setWidth(rect.width);
     };
-
-    sizeWatcher();
-    addSizeWatcher(sizeWatcher);
-
-    return () => removeSizeWatcher(sizeWatcher);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(ref);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {

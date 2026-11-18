@@ -63,7 +63,13 @@ if (process.env.SLOBS_CACHE_DIR) {
   app.setPath('appData', process.env.SLOBS_CACHE_DIR);
 }
 
-app.setPath('userData', path.join(app.getPath('appData'), 'slobs-client'));
+// Performance-rework PoC build (electron-builder/poc.config.js): own profile folder so testers'
+// real Streamlabs profile is never touched, and no app updates (they would replace the PoC).
+if (pjson.poc && !process.argv.includes('--skip-update')) process.argv.push('--skip-update');
+app.setPath(
+  'userData',
+  path.join(app.getPath('appData'), pjson.poc ? 'slobs-client-poc' : 'slobs-client'),
+);
 
 if (process.argv.includes('--clearCacheDir')) {
   try {

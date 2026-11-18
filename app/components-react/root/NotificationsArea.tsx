@@ -152,16 +152,21 @@ export default function NotificationsArea() {
     const notifPushedSub = NotificationsService.notificationPushed.subscribe(addNotif);
     const notifReadSub = NotificationsService.notificationRead.subscribe(clearQueueOfRead);
 
-    const resizeInterval = window.setInterval(() => {
+    // ResizeObserver instead of polling the width every second (docs/rework guidelines).
+    const container = notificationsContainer.current;
+    const checkWidth = () => {
       if (!notificationsContainer.current || ytDisabled) return;
       if (notificationsContainer.current?.offsetWidth >= 150 === showExtendedNotifications) return;
       setShowExtendedNotifications(notificationsContainer.current?.offsetWidth >= 150);
-    }, 1000);
+    };
+    const resizeObserver = new ResizeObserver(checkWidth);
+    if (container) resizeObserver.observe(container);
+    checkWidth();
 
     return () => {
       notifPushedSub.unsubscribe();
       notifReadSub.unsubscribe();
-      clearInterval(resizeInterval);
+      resizeObserver.disconnect();
     };
   }, []);
 

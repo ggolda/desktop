@@ -1646,6 +1646,9 @@ export class RestreamService extends StatefulService<IRestreamState> {
    * The chat service needs to be refactored
    */
   private chatView: Electron.BrowserView;
+  // Destroy the multistream chat page this long after it was last shown (docs/rework, H26).
+  private chatDestroyTimer: ReturnType<typeof setTimeout> | null = null;
+  private chatMountedWindows = new Set<number>();
 
   refreshChat() {
     if (!this.chatView) return;
@@ -1653,6 +1656,9 @@ export class RestreamService extends StatefulService<IRestreamState> {
   }
 
   mountChat(electronWindowId: number) {
+    if (this.chatDestroyTimer) clearTimeout(this.chatDestroyTimer);
+    this.chatDestroyTimer = null;
+    this.chatMountedWindows.add(electronWindowId);
     if (!this.chatView) this.initChat();
 
     const win = remote.BrowserWindow.fromId(electronWindowId);
@@ -1679,9 +1685,20 @@ export class RestreamService extends StatefulService<IRestreamState> {
 
     // @ts-ignore: this method was added in our fork
     win.removeBrowserView(this.chatView);
+    this.chatMountedWindows.delete(electronWindowId);
 
     // Automatically destroy the chat if restream has been disabled
-    if (!this.state.enabled) this.deinitChat();
+    if (!this.state.enabled) {
+      this.deinitChat();
+      return;
+    }
+
+    // Otherwise free it once it has not been shown for a while (re-created on next mount).
+    if (this.chatDestroyTimer) clearTimeout(this.chatDestroyTimer);
+    this.chatDestroyTimer = setTimeout(() => {
+      this.chatDestroyTimer = null;
+      if (!this.chatMountedWindows.size) this.deinitChat();
+    }, 60 * 1000);
   }
 
   private initChat() {

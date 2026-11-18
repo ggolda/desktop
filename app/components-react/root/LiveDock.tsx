@@ -312,9 +312,11 @@ const StreamTimer = memo(function StreamTimer({
   const [elapsed, setElapsed] = useState('');
 
   useEffect(() => {
-    const id = window.setInterval(() => {
+    // The text changes once per second; waking up 5x/s was wasted work (docs/rework guidelines).
+    const update = () =>
       setElapsed(streamingStatus === EStreamingState.Live ? ctrl.getElapsedStreamTime() : '');
-    }, 200);
+    update();
+    const id = window.setInterval(update, 1000);
     return () => clearInterval(id);
   }, [streamingStatus]);
 
