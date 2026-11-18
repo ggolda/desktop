@@ -71,8 +71,10 @@ export class PlatformContainerManager {
 
   /**
    * Registers an app with the container service.
-   * Any persistent pages will immediately be spun
-   * up in the background.
+   * Background pages are spun up immediately (they exist to run without being shown).
+   * Other `persistent` pages are created on first mount and then kept alive — creating
+   * them at startup cost one renderer (~30 MB) per page for apps the user may never
+   * open in a session (docs/rework, H6).
    * @param app The app to register
    */
   registerApp(app: ILoadedApp) {
@@ -80,8 +82,7 @@ export class PlatformContainerManager {
     this.unregisterApp(app);
 
     app.manifest.pages.forEach(page => {
-      // Background pages are always persistent
-      if (page.persistent || page.slot === EAppPageSlot.Background) {
+      if (page.slot === EAppPageSlot.Background) {
         this.createContainer(app, page.slot, true);
       }
     });
@@ -270,6 +271,10 @@ export class PlatformContainerManager {
     }
 
     view.webContents.loadURL(this.getPageUrlForSlot(app, slot));
+
+    console.log(
+      `[PlatformApps] container created: app=${app.id} slot=${slot} persistent=${persistent}`,
+    );
 
     this.containers.push(info);
 

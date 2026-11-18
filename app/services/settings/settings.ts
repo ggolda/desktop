@@ -35,9 +35,9 @@ import { Subject } from 'rxjs';
 import * as remote from '@electron/remote';
 import fs from 'fs';
 import path from 'path';
-import { Services } from 'components-react/service-provider';
 import { UserService } from 'app-services';
 import { EScaleType } from '../../../obs-api';
+import type { PlatformAppsService } from 'services/platform-apps';
 
 export enum ESettingsCategory {
   Vision = 'Vision',
@@ -192,12 +192,17 @@ interface ISettingsCategory {
 type ISettingsServiceState = Record<TCategoryName | string, ISettingsCategory>;
 
 class SettingsViews extends ViewHandler<ISettingsServiceState> {
+  // @Inject instead of the React service-provider: services must not depend on UI modules
+  // (the worker bundle has no UI code — docs/rework, worker-only bundle).
+  @Inject() private appService: AppService;
+  @Inject() private platformAppsService: PlatformAppsService;
+
   get appState() {
-    return Services.AppService.state;
+    return this.appService.state;
   }
 
   get platformAppsState() {
-    return Services.PlatformAppsService.state;
+    return this.platformAppsService.state;
   }
 
   get values() {

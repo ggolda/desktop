@@ -245,20 +245,42 @@ export class WindowsService extends StatefulService<IWindowsState> {
 
     this.windows.worker = BrowserWindow.fromId(windowIds.worker);
     this.windows.main = BrowserWindow.fromId(windowIds.main);
-    this.windows.child = BrowserWindow.fromId(windowIds.child);
+    // The child window is created on demand (see ensureChildWindow), so it may not exist yet.
+    if (windowIds.child) this.attachChildWindow(BrowserWindow.fromId(windowIds.child));
 
     // Background throttling can produce freezing on certain parts of the UI
     this.windows.worker.webContents.setBackgroundThrottling(false);
     this.windows.main.webContents.setBackgroundThrottling(false);
 
     this.updateScaleFactor('main');
-    this.updateScaleFactor('child');
     this.windows.main.on('move', () => this.updateScaleFactor('main'));
-    this.windows.child.on('move', () => this.updateScaleFactor('child'));
 
     if (remote.screen.getAllDisplays().length > 1) {
       this.usageStatisticsService.recordFeatureUsage('MultipleDisplays');
     }
+  }
+
+  private attachChildWindow(win: Electron.BrowserWindow) {
+    this.windows.child = win;
+    this.updateScaleFactor('child');
+    win.on('move', () => this.updateScaleFactor('child'));
+    win.on('closed', () => {
+      if (this.windows.child === win) delete this.windows.child;
+    });
+  }
+
+  /**
+   * Returns the child window, creating it if needed. It loads asynchronously and
+   * renders the component from `state.child` once its store has loaded.
+   */
+  private ensureChildWindow(): Electron.BrowserWindow {
+    // Always ask the main process: it replaces a window that is still closing.
+    const id = ipcRenderer.sendSync('window-ensureChildWindow');
+    const existing = this.windows.child;
+    if (!existing || existing.isDestroyed() || existing.id !== id) {
+      this.attachChildWindow(BrowserWindow.fromId(id));
+    }
+    return this.windows.child;
   }
 
   @throttle(500)
@@ -280,7 +302,9 @@ export class WindowsService extends StatefulService<IWindowsState> {
   }
 
   getWindowIdFromElectronId(electronWindowId: number) {
-    return Object.keys(this.windows).find(win => this.windows[win].id === electronWindowId);
+    return Object.keys(this.windows).find(
+      win => this.windows[win] && !this.windows[win].isDestroyed() && this.windows[win].id === electronWindowId,
+    );
   }
 
   getElectronWindowIdFromWindowId(windowId: string) {
@@ -312,6 +336,7 @@ export class WindowsService extends StatefulService<IWindowsState> {
       options.size.height = Math.min(options.size.height, screenHeight);
     }
 
+    this.ensureChildWindow();
     this.centerChildWindow(options);
     this.windows.child.show();
     this.windows.child.restore();
@@ -362,6 +387,7 @@ export class WindowsService extends StatefulService<IWindowsState> {
    */
   setWindowOnTop(window: 'child' | 'main' | 'all' = 'main') {
     const win = window === 'child' ? Utils.getChildWindow() : Utils.getMainWindow();
+    if (!win) return;
     win.setAlwaysOnTop(true);
     win.show();
     win.focus();
@@ -564,7 +590,7 @@ export class WindowsService extends StatefulService<IWindowsState> {
    */
   shutdown() {
     this.closeAllOneOffs();
-    this.windows.child.close();
+    if (this.windows.child && !this.windows.child.isDestroyed()) this.windows.child.close();
   }
 
   getChildWindowOptions(): IWindowOptions {

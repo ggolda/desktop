@@ -9,7 +9,7 @@
   "macVirtualCamUrl": "https://obs-studio-deployment.s3.us-west-2.amazonaws.com/slobs-vcam-installer-1.0.18-release-osx-[ARCH].tar.gz",
   "scripts": {
     "compile": "yarn clear && yarn compile:updater && yarn webpack-cli --progress --config ./webpack.dev.config.js",
-    "compile:production": "yarn clear && yarn compile:updater && yarn webpack-cli --progress --config ./webpack.prod.config.js",
+    "compile:production": "yarn clear && yarn compile:updater && yarn webpack-cli --progress --config ./webpack.prod.config.js && yarn webpack-cli --config ./webpack.worker.config.js",
     "compile:updater": "rimraf updater/build && tsc -p updater",
     "compile:strictnulls": "yarn clear && yarn compile:updater && cross-env SLOBS_STRICT_NULLS=true yarn webpack-cli --config ./webpack.dev.config.js",
     "compile:tests": "tsc -p test",

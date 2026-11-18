@@ -60,6 +60,10 @@ module.exports = merge(baseConfig, {
         terserOptions: {
           mangle: false,
           keep_classnames: true,
+          // Escape non-ASCII characters as \uXXXX. A single non-ASCII char makes Chromium/V8
+          // keep the whole script source as two-byte text: ~2x script memory in every
+          // window (docs/rework, H18).
+          format: { ascii_only: true },
         },
       }),
     ],

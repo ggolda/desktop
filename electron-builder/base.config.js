@@ -26,6 +26,7 @@ const base = {
     'updater/build/bundle-updater.js',
     'updater/index.html',
     'index.html',
+    'worker.html', // worker-only bundle page (docs/rework)
     'main.js',
     'obs-api',
     'updater/mac/index.html',

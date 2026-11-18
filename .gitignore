@@ -33,3 +33,6 @@ license_en.txt
 !.yarn/versions
 chromedriver.log
 shared-resources/ai-highlighter/*
+
+# Benchmark runs and fixtures (fixtures contain auth tokens)
+.bench/

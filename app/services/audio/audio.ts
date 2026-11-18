@@ -13,6 +13,9 @@ import { $t } from 'services/i18n';
 import { ipcMain, ipcRenderer } from 'electron';
 import { ViewHandler } from 'services/core';
 
+/** Max volmeter messages per second per source sent to UI windows (see sendVolmeterData). */
+const VOLMETER_SEND_HZ = 20;
+
 export enum E_AUDIO_CHANNELS {
   OUTPUT_1 = 1,
   OUTPUT_2 = 2,
@@ -179,7 +182,7 @@ export class AudioService extends StatefulService<IAudioSourcesState> {
   }
 
   unsubscribeVolmeter(sourceId: string, channelId: string) {
-    const channel = this.volmeterMessageChannels[sourceId].find(c => (c.id = channelId));
+    const channel = this.volmeterMessageChannels[sourceId]?.find(c => c.id === channelId);
     if (!channel) return;
 
     this.volmeterMessageChannels[sourceId] = this.volmeterMessageChannels[sourceId].filter(
@@ -386,10 +389,34 @@ export class AudioService extends StatefulService<IAudioSourcesState> {
     this.ADD_AUDIO_SOURCE(this.generateAudioSourceData(source.sourceId));
   }
 
+  // UI volmeters draw at ≤ 10 fps; OBS calls back far more often. Forward at most
+  // VOLMETER_SEND_HZ updates per source, merging peaks (max) in between so short spikes
+  // still show (docs/rework, H17).
+  private volmeterLastSent: Dictionary<number> = {};
+  private volmeterPending: Dictionary<IVolmeter> = {};
+
   private sendVolmeterData(sourceId: string, data: IVolmeter) {
-    if (this.volmeterMessageChannels[sourceId]) {
-      this.volmeterMessageChannels[sourceId].forEach(c => c.port.postMessage(data));
+    const channels = this.volmeterMessageChannels[sourceId];
+    if (!channels || !channels.length) return;
+
+    const pending = this.volmeterPending[sourceId];
+    const merged: IVolmeter = pending
+      ? {
+          ...data,
+          peak: data.peak.map((v, i) => Math.max(v, pending.peak[i] ?? v)),
+          magnitude: data.magnitude.map((v, i) => Math.max(v, pending.magnitude[i] ?? v)),
+          inputPeak: data.inputPeak.map((v, i) => Math.max(v, pending.inputPeak[i] ?? v)),
+        }
+      : data;
+
+    const now = Date.now();
+    if (now - (this.volmeterLastSent[sourceId] ?? 0) < 1000 / VOLMETER_SEND_HZ) {
+      this.volmeterPending[sourceId] = merged;
+      return;
     }
+    this.volmeterLastSent[sourceId] = now;
+    delete this.volmeterPending[sourceId];
+    channels.forEach(c => c.port.postMessage(merged));
   }
 
   private removeAudioSource(sourceId: string) {

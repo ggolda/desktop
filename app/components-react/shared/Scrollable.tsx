@@ -67,8 +67,9 @@ export default function Scrollable(initialProps: IScrollableProps & HTMLAttribut
       ref={osRef}
       style={{ ...p.style, ...wrapperStyles }}
       options={{
-        autoUpdate: true,
-        autoUpdateInterval: 200,
+        // null = event-driven (MutationObserver). `true` makes OverlayScrollbars poll in a
+        // requestAnimationFrame loop, which forces a frame on every vsync (docs/rework, H16).
+        autoUpdate: null,
         className: p.className,
         sizeAutoCapable: p.autoSizeCapable,
         scrollbars: { clickScrolling: true },

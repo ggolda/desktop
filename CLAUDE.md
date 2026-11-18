@@ -1,5 +1,30 @@
 # CLAUDE.md
 
+> **Active initiative — Performance Rework.** If your task is part of the rework
+> (idle CPU/RAM reduction, toolchain upgrade, benchmarking, stack consolidation),
+> **read `docs/rework/README.md` first** and follow its working protocol.
+> **The current architecture and dependencies are NOT constraints for the rework**
+> (ADR-0004) — but follow the agreed phase plan (measure → fix → re-measure); the
+> architecture draft in `docs/rework/architecture-vision.md` is parked for the final phase. The rest
+> of this file describes the *current* (legacy) code — reference for understanding and
+> migrating it, not rules for the new design.
+
+## Performance rules — top priority (read before touching UI or services)
+
+Performance is the **#1 priority** (this app runs next to games and an encoder). Full rationale
+and measurements: `docs/rework/performance-guidelines.md`.
+
+- **No continuous animation in always-visible UI**: no `animation: … infinite`, looping
+  spinners (`fa-spin`/`fa-pulse`), glows or pulsing indicators on persistent elements. One such
+  animation forces a full frame every display refresh (~2 % CPU on a 240 Hz laptop, even on an
+  empty page). If essential: drive from JS at ≤ 10 updates/s and stop when hidden/unfocused.
+- **No per-frame loops or polling**: no permanent `requestAnimationFrame` loops, no `setInterval`
+  for observable state — use events, `ResizeObserver`, `MutationObserver`, subscriptions.
+- **Live data at visible rate only** (≤ 1–10 updates/s), nothing while nobody can see it.
+- **Nothing hidden "for speed"**: no warm hidden windows/BrowserViews/pages; create on demand.
+- **Services must not import UI modules** (they end up in the worker bundle).
+- **Measure before/after** with `scripts/bench/` (`docs/rework/benchmarking.md`).
+
 Guidance for AI agents working in this repository. Keep this file lean — it loads
 into every session. Deep architecture lives in `ARCHITECTURE.md` (read it when a
 change touches the window/service/state/IPC model).

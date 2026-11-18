@@ -117,7 +117,8 @@
   }
 
   &:global(.active) {
-    animation: pulse 2.5s linear infinite;
+    // glow is driven from JS at 10 fps (useRecordingPulse) — a CSS box-shadow animation
+    // repaints on every display refresh (docs/rework, H22)
     background-color: var(--warning);
 
     span {

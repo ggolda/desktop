@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import useBaseElement from './hooks';
 import { Tooltip } from 'antd';
 import { useVuex } from 'components-react/hooks';
@@ -19,11 +19,9 @@ export function Mixer() {
 
   const { renderElement } = useBaseElement(<Element />, mins, containerRef.current);
 
-  const needToRenderVolmeters: boolean = useMemo(() => {
-    // render volmeters without hardware acceleration only if we don't have the webgl context
-    const canvas = document.createElement('canvas');
-    return !canvas.getContext('webgl');
-  }, []);
+  // The mixer meters are drawn on one 2D canvas by GLVolmeters (no WebGL needed), so the
+  // per-item 2D fallback meters are never required (docs/rework, H17).
+  const needToRenderVolmeters = false;
 
   const performanceMode = useRealmObject(CustomizationService.state).performanceMode;
   const { audioSourceIds, hideStyleBlockers } = useVuex(() => ({

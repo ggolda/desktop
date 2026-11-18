@@ -271,8 +271,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   I18nService.setVuei18nInstance(i18n);
 
-  // We don't register main/child windows in dev mode to allow refreshing
-  if (!Utils.isOneOffWindow() && !Utils.isDevMode()) {
+  // We don't register main/child windows in dev mode to allow refreshing.
+  // The child window is created/destroyed on demand (docs/rework/decisions/0003), and the
+  // crash handler treats any registered process that goes away as a crash and terminates
+  // the app — so, like one-off windows, it is not registered (unless SLOBS_WARM_CHILD).
+  const transientChild = Utils.isChildWindow() && !remote.process.env.SLOBS_WARM_CHILD;
+  if (!Utils.isOneOffWindow() && !transientChild && !Utils.isDevMode()) {
     ipcRenderer.send('register-in-crash-handler', { pid: process.pid, critical: false });
   }
 

@@ -311,6 +311,9 @@ const RecordingButton = memo(() => {
     recordingStatus,
   ]);
 
+  const recButtonRef = useRef<HTMLButtonElement>(null);
+  useRecordingPulse(recButtonRef, isRecording);
+
   return (
     <>
       <RecordingTimer isRecording={isRecording} />
@@ -326,6 +329,7 @@ const RecordingButton = memo(() => {
           }
         >
           <button
+            ref={recButtonRef}
             className={cx(styles.recordButton, 'record-button', {
               active: isRecording,
             })}
@@ -338,6 +342,36 @@ const RecordingButton = memo(() => {
     </>
   );
 });
+
+/**
+ * REC button glow while recording, driven at PULSE_FPS instead of a CSS animation:
+ * animating box-shadow in CSS repaints and composites the window on every display refresh
+ * (~220–240 frames/s on a 240 Hz screen) for the whole recording — measured 2.5 % CPU vs
+ * 0.3 % idle (docs/rework, H22). Same keyframes as the former `@keyframes pulse` (2.5 s):
+ * 0–70 % the glow spreads 0 → 4 px, 70–100 % it fades out.
+ */
+const PULSE_PERIOD_MS = 2500;
+const PULSE_FPS = 10;
+
+function useRecordingPulse(ref: React.RefObject<HTMLElement>, active: boolean) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!active || !el) return;
+    const start = performance.now();
+    const tick = () => {
+      const t = ((performance.now() - start) % PULSE_PERIOD_MS) / PULSE_PERIOD_MS;
+      const spread = t < 0.7 ? (t / 0.7) * 4 : 4;
+      const alpha = t < 0.7 ? 0.6 : 0.6 * (1 - (t - 0.7) / 0.3);
+      el.style.boxShadow = `0 0 2px ${spread.toFixed(1)}px rgba(252, 62, 63, ${alpha.toFixed(2)})`;
+    };
+    tick();
+    const id = window.setInterval(tick, 1000 / PULSE_FPS);
+    return () => {
+      clearInterval(id);
+      el.style.boxShadow = '';
+    };
+  }, [active]);
+}
 
 const RecordingTimer = memo((p: { isRecording: boolean }) => {
   const { StreamingService } = Services;

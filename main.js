@@ -32,6 +32,9 @@ if (pjson.name === 'slobs-client-ipc') {
 }
 process.env.SLOBS_VERSION = pjson.version;
 
+// Benchmark instrumentation (docs/rework/benchmarking.md). Inert unless SLOBS_BENCH_OUT is set.
+if (process.env.SLOBS_BENCH_OUT) require('./scripts/bench/bench-hook.js');
+
 const { Updater } = require('./updater/mac/Updater.js');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +97,10 @@ const windowStateKeeper = require('electron-window-state');
 const pid = require('process').pid;
 
 app.commandLine.appendSwitch('force-ui-direction', 'ltr');
+// Chromium keeps a spare, pre-spawned renderer process for faster navigations (~17 MB
+// with platform apps loaded) — not useful here (docs/rework, H13). If more features need
+// disabling, add them to this one comma-separated switch (a second switch would replace it).
+app.commandLine.appendSwitch('disable-features', 'SpareRendererForSitePerProcess');
 app.commandLine.appendSwitch(
   'ignore-connections-limit',
   'streamlabs.com,youtube.com,twitch.tv,facebook.com,mixer.com',
@@ -370,7 +377,7 @@ function forceShutdown(reason) {
 }
 
 function openDevTools() {
-  childWindow.webContents.openDevTools({ mode: 'detach' });
+  if (childWindow && !childWindow.isDestroyed()) childWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.webContents.openDevTools({ mode: 'detach' });
   workerWindow.webContents.openDevTools({ mode: 'detach' });
 }
@@ -379,6 +386,54 @@ function openDevTools() {
 // These windows are waiting for services to be ready
 const waitingVuexStores = [];
 let workerInitFinished = false;
+
+const warmChildWindow = !!process.env.SLOBS_WARM_CHILD;
+let childWindowClosing = false;
+
+function createChildWindow() {
+  childWindow = new BrowserWindow({
+    show: false,
+    frame: false,
+    fullscreenable: false,
+    titleBarStyle: 'hidden',
+    backgroundColor: '#17242D',
+    webPreferences: {
+      nodeIntegration: true,
+      backgroundThrottling: false,
+      contextIsolation: false,
+    },
+  });
+
+  remote.enable(childWindow.webContents);
+
+  childWindow.removeMenu();
+
+  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
+
+  if (process.env.SLOBS_PRODUCTION_DEBUG) {
+    childWindow.webContents.once('dom-ready', () => {
+      childWindow.webContents.openDevTools({ mode: 'detach' });
+    });
+  }
+
+  // Closing the window (title bar, Alt+F4) goes through the renderer first, so the
+  // dialog can clean up; the renderer then asks to close via 'window-closeChildWindow'.
+  childWindow.on('close', e => {
+    if (!shutdownStarted && !childWindowClosing) {
+      childWindow.send('closeWindow');
+      e.preventDefault();
+    }
+  });
+
+  const win = childWindow;
+  win.on('closed', () => {
+    if (childWindow !== win) return; // already replaced
+    childWindow = null;
+    childWindowClosing = false;
+  });
+
+  return childWindow;
+}
 
 async function startApp() {
   const crashHandler = require('crash-handler');
@@ -487,7 +542,19 @@ async function startApp() {
   remote.enable(workerWindow.webContents);
 
   // setTimeout(() => {
-  workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
+  // Worker-only bundle (no UI code) when the build has it — docs/rework. Dev builds without
+  // worker.js, or SLOBS_FULL_WORKER=1, use the full renderer bundle as before.
+  const hasWorkerBundle = (() => {
+    try {
+      return !!require(path.join(__dirname, 'bundles', 'manifest.json'))['worker.js'];
+    } catch (e) {
+      return false;
+    }
+  })();
+  const workerPage =
+    hasWorkerBundle && !process.env.SLOBS_FULL_WORKER ? 'worker.html' : 'index.html';
+  console.log(`Worker window page: ${workerPage}`);
+  workerWindow.loadURL(`file://${__dirname}/${workerPage}?windowId=worker`);
   // }, 10 * 1000);
 
   if (process.env.SLOBS_PRODUCTION_DEBUG) {
@@ -608,42 +675,10 @@ async function startApp() {
       .finally(() => app.quit());
   });
 
-  // Pre-initialize the child window
-  childWindow = new BrowserWindow({
-    show: false,
-    frame: false,
-    fullscreenable: false,
-    titleBarStyle: 'hidden',
-    backgroundColor: '#17242D',
-    webPreferences: {
-      nodeIntegration: true,
-      backgroundThrottling: false,
-      contextIsolation: false,
-    },
-  });
-
-  remote.enable(childWindow.webContents);
-
-  childWindow.removeMenu();
-
-  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
-
-  if (process.env.SLOBS_PRODUCTION_DEBUG) {
-    childWindow.webContents.once('dom-ready', () => {
-      childWindow.webContents.openDevTools({ mode: 'detach' });
-    });
-  }
-
-  // The child window is never closed, it just hides in the
-  // background until it is needed.
-  childWindow.on('close', e => {
-    if (!shutdownStarted) {
-      childWindow.send('closeWindow');
-
-      // Prevent the window from actually closing
-      e.preventDefault();
-    }
-  });
+  // The child window (hosts all dialogs) is created on demand and destroyed when the
+  // dialog closes — see docs/rework/decisions/0003-child-window-on-demand.md.
+  // SLOBS_WARM_CHILD=1 restores the old behaviour (pre-created, hidden when closed).
+  if (warmChildWindow) createChildWindow();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
@@ -811,9 +846,25 @@ ipcMain.on('openDevTools', () => {
   openDevTools();
 });
 
+ipcMain.on('window-ensureChildWindow', event => {
+  if (childWindow && !childWindow.isDestroyed() && childWindowClosing) {
+    // Reopened while the previous dialog window is still closing: replace it.
+    childWindow.destroy();
+    childWindow = null;
+    childWindowClosing = false;
+  }
+  if (!childWindow || childWindow.isDestroyed()) createChildWindow();
+  event.returnValue = childWindow.id;
+});
+
 ipcMain.on('window-closeChildWindow', event => {
-  // never close the child window, hide it instead
-  if (!childWindow.isDestroyed()) childWindow.hide();
+  if (!childWindow || childWindow.isDestroyed()) return;
+  if (warmChildWindow) {
+    childWindow.hide();
+    return;
+  }
+  childWindowClosing = true;
+  childWindow.close();
 });
 
 ipcMain.on('window-focusMain', () => {
@@ -977,7 +1028,7 @@ ipcMain.on('getWindowIds', e => {
   e.returnValue = {
     worker: workerWindow.id,
     main: mainWindow.id,
-    child: childWindow.id,
+    child: childWindow && !childWindow.isDestroyed() ? childWindow.id : null,
   };
 });
 

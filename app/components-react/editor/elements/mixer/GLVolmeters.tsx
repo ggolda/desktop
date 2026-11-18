@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash-decorators';
 import { IVolmeter } from 'services/audio';
-import electron, { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
+import * as remote from '@electron/remote';
 import difference from 'lodash/difference';
-import { compileShader, createProgram } from 'util/webgl/utils';
-import vShaderSrc from 'util/webgl/shaders/volmeter.vert';
-import fShaderSrc from 'util/webgl/shaders/volmeter.frag';
 import { Services } from 'components-react/service-provider';
 import { assertIsDefined, getDefined } from 'util/properties-type-guards';
 import { useController } from 'components-react/hooks/zustand';
@@ -17,7 +15,8 @@ const SPACE_BETWEEN_CHANNELS = 2;
 const PADDING_TOP = 39;
 const PADDING_BOTTOM = 57;
 const PEAK_WIDTH = 4;
-const PEAK_HOLD_CYCLES = 100;
+// Counted in draws: 33 draws at 10 fps ≈ 3.3 s (same hold time as 100 draws at the old 30 fps).
+const PEAK_HOLD_CYCLES = 33;
 const WARNING_LEVEL = -20;
 const DANGER_LEVEL = -9;
 
@@ -88,46 +87,66 @@ function GLVolmeters() {
 }
 
 const GLVolmetersCtx = React.createContext<GLVolmetersController | null>(null);
+
+/**
+ * Renders the mixer volume meters on a single 2D canvas (docs/rework, H17).
+ *
+ * Cost model: in Chromium every visible change costs a full frame across renderer,
+ * compositor, GPU process and DWM — regardless of how small the canvas is. So the
+ * controller works hard to produce as few frames as possible:
+ *  - event-driven: draw only when a level visibly moves (≥ MIN_PIXEL_CHANGE px) or an
+ *    animation (interpolation, peak-hold decay) is still running; no rAF loop
+ *  - capped at FPS_LIMIT
+ *  - paused (unsubscribed from data) while the main window is not focused — e.g. while
+ *    the streamer is in a game — and resumed on focus
+ *  - a CPU-backed 2D canvas instead of WebGL: no GL context in the GPU process
+ */
+const FPS_LIMIT = 10;
+const MIN_PIXEL_CHANGE = 2;
+
 class GLVolmetersController {
   private customizationService = Services.CustomizationService;
   private audioService = Services.AudioService;
 
   subscriptions: Dictionary<IVolmeterSubscription> = {};
 
-  // Used for WebGL rendering
-  private gl: WebGLRenderingContext;
-  private program: WebGLProgram;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private canvasWidth = 0;
+  private canvasHeight = 0;
+  private resizeObserver: ResizeObserver | null = null;
+  private themeSubscription: { unsubscribe(): void } | null = null;
 
-  // GL Attribute locations
-  private positionLocation: number;
-
-  // GL Uniform locations
-  private resolutionLocation: WebGLUniformLocation;
-  private translationLocation: WebGLUniformLocation;
-  private scaleLocation: WebGLUniformLocation;
-  private volumeLocation: WebGLUniformLocation;
-  private peakHoldLocation: WebGLUniformLocation;
-  private bgMultiplierLocation: WebGLUniformLocation;
-
-  private canvasWidth: number;
-  private canvasWidthInterval: number;
-  private canvasHeight: number;
-
-  // time between 2 received peaks.
-  // Used to render extra interpolated frames
+  // time between 2 received peaks. Used to render extra interpolated frames
   interpolationTime = 35;
   private bg: { r: number; g: number; b: number };
-  private fpsLimit: number;
-  private firstFrameTime: number;
-  private frameNumber: number;
-  private sourcesOrder: string[];
-  private requestedFrameId: number;
-  private bgMultiplier = this.customizationService.isDarkTheme ? 0.2 : 0.5;
+  private bgMultiplier = 0.2;
+  private green = GREEN;
+  private sourcesOrder: string[] = [];
+  private drawTimer: number | null = null;
+  private lastDrawTime = 0;
+
+  // Window focus (not document focus: typing in the chat BrowserView inside the main
+  // window must not pause the meters). Dialog windows taking focus do pause them.
+  private win = remote.getCurrentWindow();
+  private paused = false;
+  private onFocusChange = () => {
+    const active = !this.win.isDestroyed() && this.win.isFocused() && !this.win.isMinimized();
+    if (!active && !this.paused) {
+      this.paused = true;
+      Object.keys(this.subscriptions).forEach(sourceId => this.unsubscribeVolmeter(sourceId));
+      if (this.drawTimer !== null) clearTimeout(this.drawTimer);
+      this.drawTimer = null;
+    } else if (active && this.paused) {
+      this.paused = false;
+      this.subscribeVolmeters();
+      this.requestDraw();
+    }
+  };
 
   init() {
+    this.paused = !this.win.isFocused();
     this.subscribeVolmeters();
-    this.bg = this.customizationService.sectionBackground;
-    this.fpsLimit = 30;
+    this.refreshColors();
   }
 
   $refs = {
@@ -148,6 +167,10 @@ class GLVolmetersController {
   private subscribeVolmeters() {
     const audioSources = this.audioSources;
     const sourcesOrder = audioSources.map(source => source.sourceId);
+    this.sourcesOrder = sourcesOrder;
+
+    // Nobody is looking at the meters: don't receive data.
+    if (this.paused) return;
 
     // subscribe volmeters
     audioSources.forEach(source => {
@@ -160,10 +183,17 @@ class GLVolmetersController {
       const listener = (e: { data: IVolmeter }) => {
         const subscription = this.subscriptions[sourceId];
         if (!subscription) return;
-        subscription.channelsCount = e.data.peak.length;
+        const peaks = Array.from(e.data.peak);
+        // Silence or a barely changing level: ignore it when the meter is settled and
+        // would look the same, so nothing is redrawn.
+        if (this.isSettled(subscription) && this.samePixels(peaks, subscription.currentPeaks)) {
+          return;
+        }
+        subscription.channelsCount = peaks.length;
         subscription.prevPeaks = subscription.interpolatedPeaks;
-        subscription.currentPeaks = Array.from(e.data.peak);
+        subscription.currentPeaks = peaks;
         subscription.lastEventTime = performance.now();
+        this.requestDraw();
       };
 
       const IDLE_PEAK = -60;
@@ -188,7 +218,11 @@ class GLVolmetersController {
 
       this.audioService.actions.return.subscribeVolmeter(sourceId).then(id => {
         ipcRenderer.once(`port-${id}`, e => {
-          if (!this.subscriptions[sourceId]) return;
+          if (!this.subscriptions[sourceId]) {
+            // unsubscribed (paused/unmounted) before the port arrived
+            this.audioService.actions.unsubscribeVolmeter(sourceId, id);
+            return;
+          }
           this.subscriptions[sourceId].channelId = id;
           e.ports[0].onmessage = listener;
         });
@@ -198,12 +232,9 @@ class GLVolmetersController {
     });
 
     // unsubscribe from not longer relevant volmeters
-    const currentSourcesIds = sourcesOrder;
     const subscribedSourcesIds = Object.keys(this.subscriptions);
-    const sourcesToUnsubscribe = difference(subscribedSourcesIds, currentSourcesIds);
+    const sourcesToUnsubscribe = difference(subscribedSourcesIds, sourcesOrder);
     sourcesToUnsubscribe.forEach(sourceId => this.unsubscribeVolmeter(sourceId));
-
-    this.sourcesOrder = sourcesOrder;
   }
 
   private unsubscribeVolmeter(sourceId: string) {
@@ -218,122 +249,97 @@ class GLVolmetersController {
   }
 
   beforeDestroy() {
-    if (this.gl) {
-      // TODO: where is this defined or used, can be undefined too?
-      (window as typeof window & { activeWebglContexts: number })['activeWebglContexts'] -= 1;
-    }
-    clearInterval(this.canvasWidthInterval);
+    this.win.removeListener('focus', this.onFocusChange);
+    this.win.removeListener('blur', this.onFocusChange);
+    this.win.removeListener('minimize', this.onFocusChange);
+    this.win.removeListener('restore', this.onFocusChange);
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+    this.themeSubscription?.unsubscribe();
+    this.themeSubscription = null;
     // unsubscribe all volmeters
     Object.keys(this.subscriptions).forEach(sourceId => this.unsubscribeVolmeter(sourceId));
 
-    // cancel next frame rendering
-    cancelAnimationFrame(this.requestedFrameId);
+    // cancel pending frame rendering
+    if (this.drawTimer !== null) clearTimeout(this.drawTimer);
+    this.drawTimer = null;
+    this.ctx = null;
   }
 
   setupNewCanvas($canvasEl: HTMLCanvasElement) {
     this.$refs.canvas = $canvasEl;
-    // Make sure all state is cleared out
-    if (this.gl && this.program) {
-      this.gl.deleteProgram(this.program);
-    }
-    this.gl = null!;
-    this.program = null!;
-    this.positionLocation = null!;
-    this.resolutionLocation = null!;
-    this.translationLocation = null!;
-    this.scaleLocation = null!;
-    this.volumeLocation = null!;
-    this.peakHoldLocation = null!;
-    this.bgMultiplierLocation = null!;
     this.canvasWidth = 0;
     this.canvasHeight = 0;
 
-    this.setCanvasSize();
-    this.canvasWidthInterval = window.setInterval(() => this.setCanvasSize(), 500);
-    this.requestedFrameId = requestAnimationFrame(t => this.onRequestAnimationFrameHandler(t));
+    // willReadFrequently: keeps the canvas CPU-backed (no GPU context/shared image for a
+    // few rectangles); the small bitmap is uploaded when a frame is drawn.
+    this.ctx = getDefined($canvasEl.getContext('2d', { alpha: false, willReadFrequently: true }));
 
-    this.gl = getDefined(this.$refs.canvas.getContext('webgl', { alpha: false }));
-    this.initWebglRendering();
+    this.setCanvasSize();
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = new ResizeObserver(() => {
+      this.setCanvasSize();
+      this.requestDraw();
+    });
+    this.resizeObserver.observe(getDefined($canvasEl.parentElement));
+    this.themeSubscription?.unsubscribe();
+    this.themeSubscription = this.customizationService.settingsChanged.subscribe(() => {
+      this.refreshColors();
+      this.requestDraw();
+    });
+
+    for (const ev of ['focus', 'blur', 'minimize', 'restore'] as const) {
+      this.win.removeListener(ev as any, this.onFocusChange);
+      this.win.on(ev as any, this.onFocusChange);
+    }
+
+    this.requestDraw();
   }
 
   /**
-   * Render volmeters with FPS capping
+   * Schedule one draw, respecting the FPS cap. Called when data or size changes, and by
+   * a draw whose meters are still animating (interpolation, peak-hold decay).
    */
-  private onRequestAnimationFrameHandler(now: DOMHighResTimeStamp) {
-    const isDestroyed = !this.$refs.canvas;
-    if (isDestroyed) return;
-
-    // init first rendering frame
-    if (!this.firstFrameTime) {
-      this.frameNumber = -1;
-      this.firstFrameTime = now;
-    }
-
-    const timeElapsed = now - this.firstFrameTime;
-    const timeBetweenFrames = 1000 / this.fpsLimit;
-    const currentFrameNumber = Math.ceil(timeElapsed / timeBetweenFrames);
-
-    if (currentFrameNumber !== this.frameNumber) {
-      // it's time to render next frame
-      this.frameNumber = currentFrameNumber;
-      // don't render sources then channelsCount is 0
-      // happens when the browser source stops playing audio
+  private requestDraw() {
+    if (this.drawTimer !== null || !this.ctx) return;
+    const wait = Math.max(0, this.lastDrawTime + 1000 / FPS_LIMIT - performance.now());
+    this.drawTimer = window.setTimeout(() => {
+      this.drawTimer = null;
+      if (!this.$refs.canvas || !this.ctx) return; // destroyed
+      this.lastDrawTime = performance.now();
       this.drawVolmeters();
-    }
-    this.requestedFrameId = requestAnimationFrame(t => this.onRequestAnimationFrameHandler(t));
+      if (!this.paused && !this.allSettled()) this.requestDraw();
+    }, wait);
   }
 
-  private initWebglRendering() {
-    const vShader = getDefined(compileShader(this.gl, vShaderSrc, this.gl.VERTEX_SHADER));
-    const fShader = getDefined(compileShader(this.gl, fShaderSrc, this.gl.FRAGMENT_SHADER));
-    this.program = getDefined(createProgram(this.gl, vShader, fShader));
-
-    const positionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-
-    // Vertex geometry for a unit square
-    // eslint-disable-next-line
-    const positions = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
-
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
-
-    // look up where the vertex data needs to go.
-    this.positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
-
-    // lookup uniforms
-    this.resolutionLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_resolution'));
-    this.translationLocation = getDefined(
-      this.gl.getUniformLocation(this.program, 'u_translation'),
-    );
-    this.scaleLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_scale'));
-    this.volumeLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_volume'));
-    this.peakHoldLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_peakHold'));
-    this.bgMultiplierLocation = getDefined(
-      this.gl.getUniformLocation(this.program, 'u_bgMultiplier'),
-    );
-
-    this.gl.useProgram(this.program);
-
-    const warningLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_warning'));
-    this.gl.uniform1f(warningLocation, this.dbToUnitScalar(WARNING_LEVEL));
-
-    const dangerLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_danger'));
-    this.gl.uniform1f(dangerLocation, this.dbToUnitScalar(DANGER_LEVEL));
-
-    // Set colors
-    const green = this.customizationService.isDarkTheme ? GREEN : LIGHT_MODE_GREEN;
-    this.setColorUniform('u_green', green);
-    this.setColorUniform('u_yellow', YELLOW);
-    this.setColorUniform('u_red', RED);
+  /** px position of a level on the canvas — what the user can actually see change */
+  private toPixels(db: number) {
+    return Math.round(this.dbToUnitScalar(db) * (this.canvasWidth || 0));
   }
 
-  private setColorUniform(uniform: string, color: number[]) {
-    const location = this.gl.getUniformLocation(this.program, uniform);
-    // eslint-disable-next-line
-    this.gl.uniform3fv(
-      location,
-      color.map(c => c / 255),
+  private samePixels(a: number[], b: number[]) {
+    if (a.length !== b.length) return false;
+    return a.every((v, i) => Math.abs(this.toPixels(v) - this.toPixels(b[i])) < MIN_PIXEL_CHANGE);
+  }
+
+  /** nothing left to animate: interpolation finished, peak holds sit on the current level */
+  private isSettled(volmeter: IVolmeterSubscription) {
+    if (performance.now() - volmeter.lastEventTime < this.interpolationTime) return false;
+    return volmeter.currentPeaks.every(
+      (peak, ch) =>
+        volmeter.peakHolds[ch] === undefined ||
+        this.toPixels(volmeter.peakHolds[ch]) - this.toPixels(peak) < MIN_PIXEL_CHANGE,
     );
+  }
+
+  private allSettled() {
+    return Object.values(this.subscriptions).every(v => this.isSettled(v));
+  }
+
+  private refreshColors() {
+    this.bg = this.customizationService.sectionBackground;
+    this.bgMultiplier = this.customizationService.isDarkTheme ? 0.2 : 0.5;
+    this.green = this.customizationService.isDarkTheme ? GREEN : LIGHT_MODE_GREEN;
   }
 
   private setCanvasSize() {
@@ -352,62 +358,35 @@ class GLVolmetersController {
       this.$refs.canvas.height = this.canvasHeight;
       this.$refs.canvas.style.height = `${this.canvasHeight}px`;
     }
-
-    this.bg = this.customizationService.sectionBackground;
-    // Volmeter backgrounds appear brighter against a darker background
-    this.bgMultiplier = this.customizationService.isDarkTheme ? 0.2 : 0.5;
   }
 
   private drawVolmeters() {
+    const ctx = this.ctx!;
     const bg = this.bg;
+    ctx.fillStyle = `rgb(${bg.r},${bg.g},${bg.b})`;
+    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.gl.clearColor(bg.r / 255, bg.g / 255, bg.b / 255, 1);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    if (this.canvasWidth <= 0 || this.canvasHeight <= 0 || !this.sourcesOrder) return;
 
-    if (this.canvasWidth < 0 || this.canvasHeight < 0 || !this.sourcesOrder) {
-      return;
-    }
-
-    this.gl.viewport(0, 0, this.canvasWidth, this.canvasHeight);
-
-    this.gl.enableVertexAttribArray(this.positionLocation);
-    this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-
-    // Set uniforms
-    this.gl.uniform2f(this.resolutionLocation, 1, this.canvasHeight);
-
-    this.gl.uniform1f(this.bgMultiplierLocation, this.bgMultiplier);
-
-    // calculate offsetRop and render each volmeter
     let offsetTop = 0;
-    this.sourcesOrder.forEach((sourceId, ind) => {
+    this.sourcesOrder.forEach(sourceId => {
       offsetTop += PADDING_TOP;
       const volmeter = this.subscriptions[sourceId];
-      this.drawVolmeterWebgl(volmeter, offsetTop);
+      if (volmeter) this.drawVolmeter(volmeter, offsetTop);
       offsetTop += PADDING_BOTTOM;
     });
   }
 
-  private drawVolmeterWebgl(volmeter: IVolmeterSubscription, offsetTop: number) {
+  private drawVolmeter(volmeter: IVolmeterSubscription, offsetTop: number) {
     volmeter.currentPeaks.forEach((peak, channel) => {
-      this.drawVolmeterChannelWebgl(volmeter, channel, offsetTop);
+      this.drawVolmeterChannel(volmeter, channel, offsetTop);
     });
   }
 
-  private drawVolmeterChannelWebgl(
-    volmeter: IVolmeterSubscription,
-    channel: number,
-    offsetTop: number,
-  ) {
+  /** Same look as the former WebGL shader: colored zones, lit up to the level and at the peak hold. */
+  private drawVolmeterChannel(volmeter: IVolmeterSubscription, channel: number, offsetTop: number) {
     const peak = volmeter.currentPeaks[channel];
     this.updatePeakHold(volmeter, peak, channel);
-
-    this.gl.uniform2f(this.scaleLocation, 1, CHANNEL_HEIGHT);
-    this.gl.uniform2f(
-      this.translationLocation,
-      0,
-      channel * (CHANNEL_HEIGHT + SPACE_BETWEEN_CHANNELS) + offsetTop,
-    );
 
     const prevPeak = volmeter.prevPeaks[channel] ? volmeter.prevPeaks[channel] : peak;
     const timeDelta = performance.now() - volmeter.lastEventTime;
@@ -415,17 +394,35 @@ class GLVolmetersController {
     if (alpha > 1) alpha = 1;
     const interpolatedPeak = this.lerp(prevPeak, peak, alpha);
     volmeter.interpolatedPeaks[channel] = interpolatedPeak;
-    this.gl.uniform1f(this.volumeLocation, this.dbToUnitScalar(interpolatedPeak));
 
-    // X component is the location of peak hold from 0 to 1
-    // Y component is width of the peak hold from 0 to 1
-    this.gl.uniform2f(
-      this.peakHoldLocation,
-      this.dbToUnitScalar(volmeter.peakHolds[channel]),
-      PEAK_WIDTH / this.canvasWidth,
-    );
+    const y = channel * (CHANNEL_HEIGHT + SPACE_BETWEEN_CHANNELS) + offsetTop;
+    const volume = this.dbToUnitScalar(interpolatedPeak);
+    const hold = this.dbToUnitScalar(volmeter.peakHolds[channel]);
 
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+    this.fillZones(0, 1, y, false); // dimmed background bar
+    if (volume > 0) this.fillZones(0, volume, y, true);
+    if (hold !== 0) this.fillZones(hold, hold + PEAK_WIDTH / this.canvasWidth, y, true);
+  }
+
+  /** fill [x0, x1) (unit coordinates) split into green / yellow / red zones */
+  private fillZones(x0: number, x1: number, y: number, lit: boolean) {
+    const ctx = this.ctx!;
+    const w = this.canvasWidth;
+    const warning = this.dbToUnitScalar(WARNING_LEVEL);
+    const danger = this.dbToUnitScalar(DANGER_LEVEL);
+    const zones: [number, number, number[]][] = [
+      [0, warning, this.green],
+      [warning, danger, YELLOW],
+      [danger, Infinity, RED],
+    ];
+    const m = lit ? 1 : this.bgMultiplier;
+    for (const [a, b, color] of zones) {
+      const start = Math.max(a, x0);
+      const end = Math.min(b, x1);
+      if (end <= start) continue;
+      ctx.fillStyle = `rgb(${color[0] * m},${color[1] * m},${color[2] * m})`;
+      ctx.fillRect(start * w, y, (end - start) * w, CHANNEL_HEIGHT);
+    }
   }
 
   private dbToUnitScalar(db: number) {

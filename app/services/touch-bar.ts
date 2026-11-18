@@ -84,10 +84,10 @@ export class TouchBarService extends Service {
       this.appService.state.loading
     ) {
       Utils.getMainWindow().setTouchBar(this.blankTb);
-      Utils.getChildWindow().setTouchBar(this.blankTb);
+      Utils.getChildWindow()?.setTouchBar(this.blankTb);
     } else {
       Utils.getMainWindow().setTouchBar(this.mainTb);
-      Utils.getChildWindow().setTouchBar(this.mainTb);
+      Utils.getChildWindow()?.setTouchBar(this.mainTb);
     }
   }
 

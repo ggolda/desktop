@@ -14,7 +14,9 @@ class NotificationsModule {
   currentNotif: INotification | null = null;
   notifQueue = cloneDeep(Services.NotificationsService.state.notifications);
 
-  audio = new Audio(notificationAudio);
+  // Created on first play: creating a media element at startup spawns Chromium's audio
+  // service process (~6 MB) for a sound that may never play (docs/rework).
+  private audio: HTMLAudioElement | null = null;
 
   readyToPlay = false;
 
@@ -43,7 +45,10 @@ class NotificationsModule {
     }
 
     this.currentNotif = notif;
-    if (this.settings.playSound) this.audio.play();
+    if (this.settings.playSound) {
+      if (!this.audio) this.audio = new Audio(notificationAudio);
+      this.audio.play();
+    }
 
     message
       .info({
