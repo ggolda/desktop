@@ -1,0 +1,26 @@
+{
+  "name": "framework-bench",
+  "private": true,
+  "description": "UI framework / state / CSS micro-benchmarks for the Streamlabs Desktop rework (docs/rework/chapter2). Isolated from the app's dependencies.",
+  "type": "module",
+  "scripts": {},
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "@preact/signals": "^2.11.4",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@unocss/preset-wind3": "^66.13.0",
+    "@unocss/reset": "^66.13.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "preact": "^11.2.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "solid-js": "^1.9.19",
+    "svelte": "^5.58.0",
+    "typescript": "^7.0.2",
+    "unocss": "^66.13.0",
+    "vite": "^8.3.8",
+    "vite-plugin-solid": "^2.11.16",
+    "vue": "^3.6.0-rc.15"
+  }
+}

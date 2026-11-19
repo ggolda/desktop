@@ -28,9 +28,9 @@ from the measurements: [performance-guidelines.md](performance-guidelines.md) (s
 
 | Field | Value |
 | --- | --- |
-| Current phase | **Chapter 1 complete** (minimal-change fixes) → Phase 4 feasibility checkpoint: decide on architecture options with the team ([POC-REPORT.md](POC-REPORT.md) §5) |
+| Current phase | **Chapter 2 — target architecture** (Phase 5 brought forward by the owner): discovery done ([chapter2/](chapter2/)); next: framework/stack experiments, then specification |
 | Last session | 2026-11-18 — chat lifecycle, polling → ResizeObserver, chat scenario (S5); chapter 1 report written |
-| Next step | Share POC-REPORT.md with the team; decide which architecture options to pursue; optional remaining small wins (bundle diet, chat reduced motion, worker meter sampling) |
+| Next step | SPEC v0.1 ([chapter2/SPEC.md](chapter2/SPEC.md)) → owner review → M0 skeleton + delivery proof (Sonnet subagents) |
 | Blockers | none |
 | Latest baseline | [baseline.md](baseline.md) — **typical user: Electron ≈ 558 MB, idle CPU 0.77 % (0.28 % minimized)**; power user (18 apps): ≈ 1250 MB; native OBS ≈ 335 MB |
 | Best result so far | typical, preview off: Electron **~386–403 MB** WS; idle CPU **0.08 %** unfocused, **0.27 %** focused with meters moving ([meters2d](benchmarks/2026-11-18_SEQ_meters2d_1.json)); power user ~430 MB (before ascii_only) |
@@ -40,6 +40,7 @@ from the measurements: [performance-guidelines.md](performance-guidelines.md) (s
 | Doc | What it holds | Changes |
 | --- | --- | --- |
 | [README.md](README.md) | Mission, status board, working protocol | Every session |
+| [chapter2/](chapter2/) | Chapter 2 (architecture): discovery reports (distribution, OBS, modules), experiments, SPEC | Chapter 2 |
 | [POC-REPORT.md](POC-REPORT.md) | **Shareable report of chapter 1** (minimal-change optimizations: findings, fixes, results, trade-offs, what's left) | At chapter end |
 | [goals.md](goals.md) | Exact target definitions, scenarios, open questions | Rarely (via ADR) |
 | [architecture-vision.md](architecture-vision.md) | **Parked draft** — ideas for the final stack/architecture phase; not the current plan | Final phase |

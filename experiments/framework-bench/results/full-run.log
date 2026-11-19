@@ -1,0 +1,131 @@
+vanilla    editor/idle      #1: open  175 ms | renderer 22 MB ws / 31.7 priv, 0.177% | gpu 108.9 MB, 0.528% | total 177.5 MB, 0.766%
+vanilla    editor/idle      #2: open  178 ms | renderer 21.7 MB ws / 30.4 priv, 0.156% | gpu 108.8 MB, 0.66% | total 179.9 MB, 0.842%
+vanilla    editor/idle      #3: open  173 ms | renderer 21.8 MB ws / 30.5 priv, 0.16% | gpu 109.9 MB, 0.715% | total 178.4 MB, 0.901%
+vanilla    editor/busy      #1: open  178 ms | renderer 24.2 MB ws / 33.1 priv, 0.195% | gpu 120.8 MB, 0.652% | total 194.3 MB, 0.886%
+vanilla    editor/busy      #2: open  173 ms | renderer 24.3 MB ws / 33 priv, 0.217% | gpu 126.8 MB, 0.643% | total 200.5 MB, 0.895%
+vanilla    editor/busy      #3: open  202 ms | renderer 23.9 MB ws / 32.7 priv, 0.26% | gpu 124.4 MB, 0.733% | total 197.9 MB, 1.028%
+vanilla    settings/static  #1: open  210 ms | renderer 20.6 MB ws / 30.5 priv, 0% | gpu 120.1 MB, 0% | total 186.9 MB, 0%
+vanilla    settings/static  #2: open  226 ms | renderer 20.7 MB ws / 29.7 priv, 0% | gpu 120.1 MB, 0.013% | total 187.6 MB, 0.013%
+vanilla    settings/static  #3: open  207 ms | renderer 20.8 MB ws / 29.7 priv, 0% | gpu 120.8 MB, 0% | total 187.9 MB, 0.013%
+vanilla    rename/static    #1: open  207 ms | renderer 18.1 MB ws / 27.8 priv, 0.004% | gpu 80.6 MB, 0.009% | total 147.8 MB, 0.017%
+vanilla    rename/static    #2: open  202 ms | renderer 15.5 MB ws / 25.2 priv, 0% | gpu 81.2 MB, 0.009% | total 148.4 MB, 0.013%
+vanilla    rename/static    #3: open  190 ms | renderer 18.1 MB ws / 26.8 priv, 0% | gpu 80.8 MB, 0% | total 147.7 MB, 0%
+svelte     editor/idle      #1: open  174 ms | renderer 27.2 MB ws / 37.6 priv, 0.156% | gpu 121.9 MB, 0.656% | total 195.1 MB, 0.829%
+svelte     editor/idle      #2: open  177 ms | renderer 24.5 MB ws / 35 priv, 0.161% | gpu 118.8 MB, 0.608% | total 192.3 MB, 0.787%
+svelte     editor/idle      #3: open  180 ms | renderer 24.7 MB ws / 35.3 priv, 0.152% | gpu 113.9 MB, 0.651% | total 184.9 MB, 0.85%
+svelte     editor/busy      #1: open  177 ms | renderer 30.5 MB ws / 40.6 priv, 0.283% | gpu 120.7 MB, 0.683% | total 198 MB, 1.006%
+svelte     editor/busy      #2: open  182 ms | renderer 27.8 MB ws / 37.5 priv, 0.303% | gpu 129 MB, 0.66% | total 204 MB, 1.032%
+svelte     editor/busy      #3: open  178 ms | renderer 28.1 MB ws / 38.4 priv, 0.238% | gpu 127.4 MB, 0.694% | total 202.4 MB, 0.981%
+svelte     settings/static  #1: open  213 ms | renderer 24.9 MB ws / 35.8 priv, 0% | gpu 116.7 MB, 0.004% | total 187.9 MB, 0.004%
+svelte     settings/static  #2: open  231 ms | renderer 25.2 MB ws / 35.7 priv, 0% | gpu 116.6 MB, 0.004% | total 191.1 MB, 0.009%
+svelte     settings/static  #3: open  207 ms | renderer 25.1 MB ws / 35.8 priv, 0% | gpu 116.1 MB, 0% | total 187.7 MB, 0.004%
+svelte     rename/static    #1: open  221 ms | renderer 15.8 MB ws / 24.6 priv, 0% | gpu 76.9 MB, 0.004% | total 139 MB, 0.022%
+svelte     rename/static    #2: open  221 ms | renderer 18.3 MB ws / 27 priv, 0.004% | gpu 80.6 MB, 0% | total 148 MB, 0.017%
+svelte     rename/static    #3: open  221 ms | renderer 15.7 MB ws / 24.6 priv, 0% | gpu 80.7 MB, 0% | total 142.7 MB, 0.004%
+solid      editor/idle      #1: open  177 ms | renderer 24.4 MB ws / 36 priv, 0.148% | gpu 113.1 MB, 0.666% | total 183.8 MB, 0.849%
+solid      editor/idle      #2: open  179 ms | renderer 26.8 MB ws / 37.2 priv, 0.221% | gpu 108.8 MB, 0.702% | total 181.9 MB, 0.954%
+solid      editor/idle      #3: open  176 ms | renderer 23.9 MB ws / 35.3 priv, 0.174% | gpu 108.7 MB, 0.695% | total 182 MB, 0.904%
+solid      editor/busy      #1: open  225 ms | renderer 29.5 MB ws / 40.3 priv, 0.339% | gpu 124.8 MB, 0.712% | total 201.2 MB, 1.086%
+solid      editor/busy      #2: open  182 ms | renderer 26.5 MB ws / 37.3 priv, 0.212% | gpu 124.4 MB, 0.703% | total 200.4 MB, 0.985%
+solid      editor/busy      #3: open  175 ms | renderer 29.7 MB ws / 39.8 priv, 0.225% | gpu 124.5 MB, 0.668% | total 201.5 MB, 0.946%
+solid      settings/static  #1: open  223 ms | renderer 23.5 MB ws / 33.3 priv, 0% | gpu 120 MB, 0% | total 190.1 MB, 0.013%
+solid      settings/static  #2: open  223 ms | renderer 26.3 MB ws / 36.5 priv, 0% | gpu 120.1 MB, 0.004% | total 193 MB, 0.009%
+solid      settings/static  #3: open  227 ms | renderer 23.6 MB ws / 33.7 priv, 0% | gpu 120 MB, 0.004% | total 189.8 MB, 0.004%
+solid      rename/static    #1: open  221 ms | renderer 18.4 MB ws / 27.2 priv, 0% | gpu 80.7 MB, 0% | total 145.6 MB, 0.004%
+solid      rename/static    #2: open  207 ms | renderer 15.2 MB ws / 24 priv, 0% | gpu 86.9 MB, 0.004% | total 148.6 MB, 0.009%
+solid      rename/static    #3: open  217 ms | renderer 14.8 MB ws / 23.7 priv, 0% | gpu 76.7 MB, 0.004% | total 138.2 MB, 0.004%
+vue        editor/idle      #1: open  175 ms | renderer 27.6 MB ws / 39.4 priv, 0.173% | gpu 116.7 MB, 0.655% | total 190.9 MB, 0.855%
+vue        editor/idle      #2: open  186 ms | renderer 26.9 MB ws / 38.3 priv, 0.178% | gpu 126.5 MB, 0.66% | total 199.6 MB, 0.886%
+vue        editor/idle      #3: open  175 ms | renderer 26.5 MB ws / 37.6 priv, 0.173% | gpu 117.4 MB, 0.634% | total 190.4 MB, 0.842%
+vue        editor/busy      #1: open  191 ms | renderer 29.3 MB ws / 39.8 priv, 0.321% | gpu 126.3 MB, 0.394% | total 205.1 MB, 0.772%
+vue        editor/busy      #2: open  170 ms | renderer 29.3 MB ws / 40.4 priv, 0.243% | gpu 134.6 MB, 0.752% | total 210.7 MB, 1.052%
+vue        editor/busy      #3: open  178 ms | renderer 31.7 MB ws / 42.2 priv, 0.257% | gpu 125.3 MB, 0.647% | total 209.1 MB, 0.974%
+vue        settings/static  #1: open  211 ms | renderer 27.8 MB ws / 38.5 priv, 0% | gpu 109 MB, 0% | total 183.6 MB, 0.009%
+vue        settings/static  #2: open  233 ms | renderer 25.5 MB ws / 36 priv, 0% | gpu 120.5 MB, 0% | total 198.2 MB, 0%
+vue        settings/static  #3: open  230 ms | renderer 24.6 MB ws / 36.1 priv, 0% | gpu 120.3 MB, 0% | total 191.1 MB, 0.004%
+vue        rename/static    #1: open  236 ms | renderer 16 MB ws / 25.2 priv, 0% | gpu 76.7 MB, 0.013% | total 139.3 MB, 0.03%
+vue        rename/static    #2: open  222 ms | renderer 16 MB ws / 25.3 priv, 0% | gpu 76.9 MB, 0.009% | total 139.3 MB, 0.022%
+vue        rename/static    #3: open  227 ms | renderer 15.9 MB ws / 25.1 priv, 0% | gpu 76.8 MB, 0% | total 139.2 MB, 0.017%
+vue-vapor  editor/idle      #1: open  186 ms | renderer 27.4 MB ws / 38.1 priv, 0.201% | gpu 109.3 MB, 0.699% | total 183.3 MB, 0.921%
+vue-vapor  editor/idle      #2: open  177 ms | renderer 24.7 MB ws / 35.4 priv, 0.251% | gpu 108.8 MB, 0.706% | total 180 MB, 1.001%
+vue-vapor  editor/idle      #3: open  180 ms | renderer 24.5 MB ws / 34.8 priv, 0.135% | gpu 108.7 MB, 0.646% | total 182.3 MB, 0.82%
+vue-vapor  editor/busy      #1: open  189 ms | renderer 27.5 MB ws / 39.2 priv, 0.277% | gpu 122.8 MB, 0.742% | total 197.3 MB, 1.084%
+vue-vapor  editor/busy      #2: open  181 ms | renderer 27.7 MB ws / 38.3 priv, 0.275% | gpu 124.4 MB, 0.64% | total 199.1 MB, 1.002%
+vue-vapor  editor/busy      #3: open  179 ms | renderer 27.5 MB ws / 37.7 priv, 0.278% | gpu 124.9 MB, 0.734% | total 199.6 MB, 1.038%
+vue-vapor  settings/static  #1: open  222 ms | renderer 24.9 MB ws / 35.4 priv, 0% | gpu 124.5 MB, 0% | total 196.2 MB, 0.009%
+vue-vapor  settings/static  #2: open  201 ms | renderer 25 MB ws / 35.4 priv, 0% | gpu 116.7 MB, 0% | total 190.6 MB, 0.004%
+vue-vapor  settings/static  #3: open  216 ms | renderer 25.6 MB ws / 36.2 priv, 0% | gpu 116.4 MB, 0.009% | total 190.8 MB, 0.013%
+vue-vapor  rename/static    #1: open  214 ms | renderer 15.7 MB ws / 25.7 priv, 0% | gpu 72.9 MB, 0.004% | total 135.3 MB, 0.013%
+vue-vapor  rename/static    #2: open  214 ms | renderer 18.4 MB ws / 27.3 priv, 0% | gpu 73 MB, 0.004% | total 140.1 MB, 0.013%
+vue-vapor  rename/static    #3: open  210 ms | renderer 15.7 MB ws / 24.7 priv, 0% | gpu 72.7 MB, 0% | total 137.7 MB, 0.009%
+preact     editor/idle      #1: open  187 ms | renderer 26.3 MB ws / 38.6 priv, 0.148% | gpu 108.8 MB, 0.725% | total 184.3 MB, 0.907%
+preact     editor/idle      #2: open  179 ms | renderer 26.3 MB ws / 36.7 priv, 0.213% | gpu 109.7 MB, 0.72% | total 182.8 MB, 0.976%
+preact     editor/idle      #3: open  179 ms | renderer 29.1 MB ws / 39.6 priv, 0.143% | gpu 108.9 MB, 0.686% | total 187.4 MB, 0.86%
+preact     editor/busy      #1: open  182 ms | renderer 29.1 MB ws / 40.4 priv, 0.238% | gpu 120.6 MB, 0.689% | total 196.9 MB, 0.971%
+preact     editor/busy      #2: open  222 ms | renderer 29.3 MB ws / 41.9 priv, 0.266% | gpu 120.3 MB, 0.715% | total 196.5 MB, 1.016%
+preact     editor/busy      #3: open  180 ms | renderer 32.2 MB ws / 43.1 priv, 0.243% | gpu 124.7 MB, 0.738% | total 203.8 MB, 1.02%
+preact     settings/static  #1: open  227 ms | renderer 22.8 MB ws / 33.7 priv, 0% | gpu 116.8 MB, 0% | total 186.3 MB, 0%
+preact     settings/static  #2: open  227 ms | renderer 23 MB ws / 33.9 priv, 0% | gpu 116.2 MB, 0.004% | total 185.6 MB, 0.013%
+preact     settings/static  #3: open  224 ms | renderer 23 MB ws / 34 priv, 0% | gpu 116.2 MB, 0% | total 185.6 MB, 0.013%
+preact     rename/static    #1: open  222 ms | renderer 15.5 MB ws / 24.5 priv, 0% | gpu 73.2 MB, 0% | total 135.1 MB, 0.004%
+preact     rename/static    #2: open  230 ms | renderer 15.5 MB ws / 24.5 priv, 0% | gpu 76.6 MB, 0% | total 141.6 MB, 0.004%
+preact     rename/static    #3: open  218 ms | renderer 15.5 MB ws / 24.6 priv, 0% | gpu 76.6 MB, 0% | total 141.2 MB, 0.009%
+react      editor/idle      #1: open  162 ms | renderer 26.7 MB ws / 37.2 priv, 0.174% | gpu 115.7 MB, 0.664% | total 188.9 MB, 0.869%
+react      editor/idle      #2: open  177 ms | renderer 26.3 MB ws / 36.6 priv, 0.178% | gpu 108.7 MB, 0.643% | total 181.3 MB, 0.847%
+react      editor/idle      #3: open  173 ms | renderer 26.8 MB ws / 37.6 priv, 0.164% | gpu 109.1 MB, 0.708% | total 185 MB, 0.902%
+react      editor/busy      #1: open  176 ms | renderer 31.3 MB ws / 41.6 priv, 0.26% | gpu 116.5 MB, 0.699% | total 194.7 MB, 1.001%
+react      editor/busy      #2: open  181 ms | renderer 31 MB ws / 41.4 priv, 0.316% | gpu 124.5 MB, 0.662% | total 202.6 MB, 1.03%
+react      editor/busy      #3: open  184 ms | renderer 30.5 MB ws / 41 priv, 0.277% | gpu 123.5 MB, 0.664% | total 206.4 MB, 0.967%
+react      settings/static  #1: open  222 ms | renderer 24 MB ws / 34.3 priv, 0% | gpu 120.3 MB, 0% | total 190.8 MB, 0.004%
+react      settings/static  #2: open  224 ms | renderer 24.6 MB ws / 35.1 priv, 0% | gpu 120.9 MB, 0.004% | total 191.7 MB, 0.009%
+react      settings/static  #3: open  220 ms | renderer 24.3 MB ws / 34.7 priv, 0% | gpu 120.7 MB, 0.004% | total 194 MB, 0.004%
+react      rename/static    #1: open  212 ms | renderer 16.8 MB ws / 25.4 priv, 0% | gpu 76.8 MB, 0% | total 139.8 MB, 0%
+react      rename/static    #2: open  204 ms | renderer 19.4 MB ws / 28.1 priv, 0% | gpu 76.6 MB, 0% | total 142.3 MB, 0.009%
+react      rename/static    #3: open  216 ms | renderer 16.7 MB ws / 25.4 priv, 0% | gpu 76.8 MB, 0.004% | total 139.9 MB, 0.013%
+
+=== median of runs ===
+┌─────────┬─────────────┬───────────────────┬────────────┬────────────┬──────────────┬─────────────┬────────┬─────────┬──────────┐
+│ (index) │ fw          │ case              │ coldOpenMs │ rendererWs │ rendererPriv │ rendererCpu │ gpuCpu │ totalWs │ totalCpu │
+├─────────┼─────────────┼───────────────────┼────────────┼────────────┼──────────────┼─────────────┼────────┼─────────┼──────────┤
+│ 0       │ 'vanilla'   │ 'editor/idle'     │ 175        │ 21.8       │ 30.5         │ 0.16        │ 0.66   │ 178.4   │ 0.842    │
+│ 1       │ 'vanilla'   │ 'editor/busy'     │ 178        │ 24.2       │ 33           │ 0.217       │ 0.652  │ 197.9   │ 0.895    │
+│ 2       │ 'vanilla'   │ 'settings/static' │ 210        │ 20.7       │ 29.7         │ 0           │ 0      │ 187.6   │ 0.013    │
+│ 3       │ 'vanilla'   │ 'rename/static'   │ 202        │ 18.1       │ 26.8         │ 0           │ 0.009  │ 147.8   │ 0.013    │
+│ 4       │ 'svelte'    │ 'editor/idle'     │ 177        │ 24.7       │ 35.3         │ 0.156       │ 0.651  │ 192.3   │ 0.829    │
+│ 5       │ 'svelte'    │ 'editor/busy'     │ 178        │ 28.1       │ 38.4         │ 0.283       │ 0.683  │ 202.4   │ 1.006    │
+│ 6       │ 'svelte'    │ 'settings/static' │ 213        │ 25.1       │ 35.8         │ 0           │ 0.004  │ 187.9   │ 0.004    │
+│ 7       │ 'svelte'    │ 'rename/static'   │ 221        │ 15.8       │ 24.6         │ 0           │ 0      │ 142.7   │ 0.017    │
+│ 8       │ 'solid'     │ 'editor/idle'     │ 177        │ 24.4       │ 36           │ 0.174       │ 0.695  │ 182     │ 0.904    │
+│ 9       │ 'solid'     │ 'editor/busy'     │ 182        │ 29.5       │ 39.8         │ 0.225       │ 0.703  │ 201.2   │ 0.985    │
+│ 10      │ 'solid'     │ 'settings/static' │ 223        │ 23.6       │ 33.7         │ 0           │ 0.004  │ 190.1   │ 0.009    │
+│ 11      │ 'solid'     │ 'rename/static'   │ 217        │ 15.2       │ 24           │ 0           │ 0.004  │ 145.6   │ 0.004    │
+│ 12      │ 'vue'       │ 'editor/idle'     │ 175        │ 26.9       │ 38.3         │ 0.173       │ 0.655  │ 190.9   │ 0.855    │
+│ 13      │ 'vue'       │ 'editor/busy'     │ 178        │ 29.3       │ 40.4         │ 0.257       │ 0.647  │ 209.1   │ 0.974    │
+│ 14      │ 'vue'       │ 'settings/static' │ 230        │ 25.5       │ 36.1         │ 0           │ 0      │ 191.1   │ 0.004    │
+│ 15      │ 'vue'       │ 'rename/static'   │ 227        │ 16         │ 25.2         │ 0           │ 0.009  │ 139.3   │ 0.022    │
+│ 16      │ 'vue-vapor' │ 'editor/idle'     │ 180        │ 24.7       │ 35.4         │ 0.201       │ 0.699  │ 182.3   │ 0.921    │
+│ 17      │ 'vue-vapor' │ 'editor/busy'     │ 181        │ 27.5       │ 38.3         │ 0.277       │ 0.734  │ 199.1   │ 1.038    │
+│ 18      │ 'vue-vapor' │ 'settings/static' │ 216        │ 25         │ 35.4         │ 0           │ 0      │ 190.8   │ 0.009    │
+│ 19      │ 'vue-vapor' │ 'rename/static'   │ 214        │ 15.7       │ 25.7         │ 0           │ 0.004  │ 137.7   │ 0.013    │
+│ 20      │ 'preact'    │ 'editor/idle'     │ 179        │ 26.3       │ 38.6         │ 0.148       │ 0.72   │ 184.3   │ 0.907    │
+│ 21      │ 'preact'    │ 'editor/busy'     │ 182        │ 29.3       │ 41.9         │ 0.243       │ 0.715  │ 196.9   │ 1.016    │
+│ 22      │ 'preact'    │ 'settings/static' │ 227        │ 23         │ 33.9         │ 0           │ 0      │ 185.6   │ 0.013    │
+│ 23      │ 'preact'    │ 'rename/static'   │ 222        │ 15.5       │ 24.5         │ 0           │ 0      │ 141.2   │ 0.004    │
+│ 24      │ 'react'     │ 'editor/idle'     │ 173        │ 26.7       │ 37.2         │ 0.174       │ 0.664  │ 185     │ 0.869    │
+│ 25      │ 'react'     │ 'editor/busy'     │ 181        │ 31         │ 41.4         │ 0.277       │ 0.664  │ 202.6   │ 1.001    │
+│ 26      │ 'react'     │ 'settings/static' │ 222        │ 24.3       │ 34.7         │ 0           │ 0.004  │ 191.7   │ 0.004    │
+│ 27      │ 'react'     │ 'rename/static'   │ 212        │ 16.8       │ 25.4         │ 0           │ 0      │ 139.9   │ 0.009    │
+└─────────┴─────────────┴───────────────────┴────────────┴────────────┴──────────────┴─────────────┴────────┴─────────┴──────────┘
+bundle sizes (all 3 pages, KB):
+┌───────────┬───────┬────────┬───────┬─────────┐
+│ (index)   │ jsKB  │ jsGzKB │ cssKB │ cssGzKB │
+├───────────┼───────┼────────┼───────┼─────────┤
+│ vanilla   │ 7.2   │ 3.4    │ 7.2   │ 2.3     │
+│ svelte    │ 47.9  │ 19.1   │ 7.2   │ 2.4     │
+│ solid     │ 24.8  │ 10.1   │ 7.2   │ 2.3     │
+│ vue       │ 77.4  │ 30.1   │ 7.2   │ 2.3     │
+│ vue-vapor │ 67.7  │ 25.8   │ 7.2   │ 2.3     │
+│ preact    │ 28.2  │ 11.2   │ 7.2   │ 2.3     │
+│ react     │ 222.7 │ 69.5   │ 7.2   │ 2.3     │
+└───────────┴───────┴────────┴───────┴─────────┘
+written results\2026-11-18-full.json

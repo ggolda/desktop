@@ -1,0 +1,2045 @@
+{
+ "machine": {
+  "cpu": "AMD Ryzen AI 9 HX 370 w/ Radeon 890M           ",
+  "cores": 24
+ },
+ "runs": 3,
+ "settleSec": 8,
+ "sampleSec": 15,
+ "results": [
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 175,
+   "renderer": {
+    "ws": 22,
+    "priv": 31.7,
+    "cpu": 0.177
+   },
+   "gpu": {
+    "ws": 108.9,
+    "priv": 143.3,
+    "cpu": 0.528
+   },
+   "total": {
+    "ws": 177.5,
+    "cpu": 0.766
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 178,
+   "renderer": {
+    "ws": 21.7,
+    "priv": 30.4,
+    "cpu": 0.156
+   },
+   "gpu": {
+    "ws": 108.8,
+    "priv": 142.2,
+    "cpu": 0.66
+   },
+   "total": {
+    "ws": 179.9,
+    "cpu": 0.842
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 173,
+   "renderer": {
+    "ws": 21.8,
+    "priv": 30.5,
+    "cpu": 0.16
+   },
+   "gpu": {
+    "ws": 109.9,
+    "priv": 143.7,
+    "cpu": 0.715
+   },
+   "total": {
+    "ws": 178.4,
+    "cpu": 0.901
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 178,
+   "renderer": {
+    "ws": 24.2,
+    "priv": 33.1,
+    "cpu": 0.195
+   },
+   "gpu": {
+    "ws": 120.8,
+    "priv": 157.1,
+    "cpu": 0.652
+   },
+   "total": {
+    "ws": 194.3,
+    "cpu": 0.886
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 173,
+   "renderer": {
+    "ws": 24.3,
+    "priv": 33,
+    "cpu": 0.217
+   },
+   "gpu": {
+    "ws": 126.8,
+    "priv": 164.4,
+    "cpu": 0.643
+   },
+   "total": {
+    "ws": 200.5,
+    "cpu": 0.895
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 202,
+   "renderer": {
+    "ws": 23.9,
+    "priv": 32.7,
+    "cpu": 0.26
+   },
+   "gpu": {
+    "ws": 124.4,
+    "priv": 162.1,
+    "cpu": 0.733
+   },
+   "total": {
+    "ws": 197.9,
+    "cpu": 1.028
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 210,
+   "renderer": {
+    "ws": 20.6,
+    "priv": 30.5,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.1,
+    "priv": 154.2,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 186.9,
+    "cpu": 0
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 226,
+   "renderer": {
+    "ws": 20.7,
+    "priv": 29.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.1,
+    "priv": 155.4,
+    "cpu": 0.013
+   },
+   "total": {
+    "ws": 187.6,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 207,
+   "renderer": {
+    "ws": 20.8,
+    "priv": 29.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.8,
+    "priv": 156,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 187.9,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 207,
+   "renderer": {
+    "ws": 18.1,
+    "priv": 27.8,
+    "cpu": 0.004
+   },
+   "gpu": {
+    "ws": 80.6,
+    "priv": 110.1,
+    "cpu": 0.009
+   },
+   "total": {
+    "ws": 147.8,
+    "cpu": 0.017
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 202,
+   "renderer": {
+    "ws": 15.5,
+    "priv": 25.2,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 81.2,
+    "priv": 108.2,
+    "cpu": 0.009
+   },
+   "total": {
+    "ws": 148.4,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vanilla",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 190,
+   "renderer": {
+    "ws": 18.1,
+    "priv": 26.8,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 80.8,
+    "priv": 107.8,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 147.7,
+    "cpu": 0
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 174,
+   "renderer": {
+    "ws": 27.2,
+    "priv": 37.6,
+    "cpu": 0.156
+   },
+   "gpu": {
+    "ws": 121.9,
+    "priv": 150,
+    "cpu": 0.656
+   },
+   "total": {
+    "ws": 195.1,
+    "cpu": 0.829
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 177,
+   "renderer": {
+    "ws": 24.5,
+    "priv": 35,
+    "cpu": 0.161
+   },
+   "gpu": {
+    "ws": 118.8,
+    "priv": 146,
+    "cpu": 0.608
+   },
+   "total": {
+    "ws": 192.3,
+    "cpu": 0.787
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 180,
+   "renderer": {
+    "ws": 24.7,
+    "priv": 35.3,
+    "cpu": 0.152
+   },
+   "gpu": {
+    "ws": 113.9,
+    "priv": 146.4,
+    "cpu": 0.651
+   },
+   "total": {
+    "ws": 184.9,
+    "cpu": 0.85
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 177,
+   "renderer": {
+    "ws": 30.5,
+    "priv": 40.6,
+    "cpu": 0.283
+   },
+   "gpu": {
+    "ws": 120.7,
+    "priv": 158,
+    "cpu": 0.683
+   },
+   "total": {
+    "ws": 198,
+    "cpu": 1.006
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 182,
+   "renderer": {
+    "ws": 27.8,
+    "priv": 37.5,
+    "cpu": 0.303
+   },
+   "gpu": {
+    "ws": 129,
+    "priv": 163.1,
+    "cpu": 0.66
+   },
+   "total": {
+    "ws": 204,
+    "cpu": 1.032
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 178,
+   "renderer": {
+    "ws": 28.1,
+    "priv": 38.4,
+    "cpu": 0.238
+   },
+   "gpu": {
+    "ws": 127.4,
+    "priv": 164.1,
+    "cpu": 0.694
+   },
+   "total": {
+    "ws": 202.4,
+    "cpu": 0.981
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 213,
+   "renderer": {
+    "ws": 24.9,
+    "priv": 35.8,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.7,
+    "priv": 153.5,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 187.9,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 231,
+   "renderer": {
+    "ws": 25.2,
+    "priv": 35.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.6,
+    "priv": 154.6,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 191.1,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 207,
+   "renderer": {
+    "ws": 25.1,
+    "priv": 35.8,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.1,
+    "priv": 154.7,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 187.7,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 221,
+   "renderer": {
+    "ws": 15.8,
+    "priv": 24.6,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.9,
+    "priv": 111.7,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 139,
+    "cpu": 0.022
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 221,
+   "renderer": {
+    "ws": 18.3,
+    "priv": 27,
+    "cpu": 0.004
+   },
+   "gpu": {
+    "ws": 80.6,
+    "priv": 111.6,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 148,
+    "cpu": 0.017
+   }
+  },
+  {
+   "fw": "svelte",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 221,
+   "renderer": {
+    "ws": 15.7,
+    "priv": 24.6,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 80.7,
+    "priv": 110.7,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 142.7,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 177,
+   "renderer": {
+    "ws": 24.4,
+    "priv": 36,
+    "cpu": 0.148
+   },
+   "gpu": {
+    "ws": 113.1,
+    "priv": 147,
+    "cpu": 0.666
+   },
+   "total": {
+    "ws": 183.8,
+    "cpu": 0.849
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 179,
+   "renderer": {
+    "ws": 26.8,
+    "priv": 37.2,
+    "cpu": 0.221
+   },
+   "gpu": {
+    "ws": 108.8,
+    "priv": 143,
+    "cpu": 0.702
+   },
+   "total": {
+    "ws": 181.9,
+    "cpu": 0.954
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 176,
+   "renderer": {
+    "ws": 23.9,
+    "priv": 35.3,
+    "cpu": 0.174
+   },
+   "gpu": {
+    "ws": 108.7,
+    "priv": 142.1,
+    "cpu": 0.695
+   },
+   "total": {
+    "ws": 182,
+    "cpu": 0.904
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 225,
+   "renderer": {
+    "ws": 29.5,
+    "priv": 40.3,
+    "cpu": 0.339
+   },
+   "gpu": {
+    "ws": 124.8,
+    "priv": 159.2,
+    "cpu": 0.712
+   },
+   "total": {
+    "ws": 201.2,
+    "cpu": 1.086
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 182,
+   "renderer": {
+    "ws": 26.5,
+    "priv": 37.3,
+    "cpu": 0.212
+   },
+   "gpu": {
+    "ws": 124.4,
+    "priv": 159.8,
+    "cpu": 0.703
+   },
+   "total": {
+    "ws": 200.4,
+    "cpu": 0.985
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 175,
+   "renderer": {
+    "ws": 29.7,
+    "priv": 39.8,
+    "cpu": 0.225
+   },
+   "gpu": {
+    "ws": 124.5,
+    "priv": 162,
+    "cpu": 0.668
+   },
+   "total": {
+    "ws": 201.5,
+    "cpu": 0.946
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 223,
+   "renderer": {
+    "ws": 23.5,
+    "priv": 33.3,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120,
+    "priv": 152.6,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 190.1,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 223,
+   "renderer": {
+    "ws": 26.3,
+    "priv": 36.5,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.1,
+    "priv": 152.9,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 193,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 227,
+   "renderer": {
+    "ws": 23.6,
+    "priv": 33.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120,
+    "priv": 156.3,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 189.8,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 221,
+   "renderer": {
+    "ws": 18.4,
+    "priv": 27.2,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 80.7,
+    "priv": 111.1,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 145.6,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 207,
+   "renderer": {
+    "ws": 15.2,
+    "priv": 24,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 86.9,
+    "priv": 116.3,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 148.6,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "solid",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 217,
+   "renderer": {
+    "ws": 14.8,
+    "priv": 23.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.7,
+    "priv": 107.1,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 138.2,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 175,
+   "renderer": {
+    "ws": 27.6,
+    "priv": 39.4,
+    "cpu": 0.173
+   },
+   "gpu": {
+    "ws": 116.7,
+    "priv": 147.4,
+    "cpu": 0.655
+   },
+   "total": {
+    "ws": 190.9,
+    "cpu": 0.855
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 186,
+   "renderer": {
+    "ws": 26.9,
+    "priv": 38.3,
+    "cpu": 0.178
+   },
+   "gpu": {
+    "ws": 126.5,
+    "priv": 151.3,
+    "cpu": 0.66
+   },
+   "total": {
+    "ws": 199.6,
+    "cpu": 0.886
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 175,
+   "renderer": {
+    "ws": 26.5,
+    "priv": 37.6,
+    "cpu": 0.173
+   },
+   "gpu": {
+    "ws": 117.4,
+    "priv": 146.2,
+    "cpu": 0.634
+   },
+   "total": {
+    "ws": 190.4,
+    "cpu": 0.842
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 191,
+   "renderer": {
+    "ws": 29.3,
+    "priv": 39.8,
+    "cpu": 0.321
+   },
+   "gpu": {
+    "ws": 126.3,
+    "priv": 158,
+    "cpu": 0.394
+   },
+   "total": {
+    "ws": 205.1,
+    "cpu": 0.772
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 170,
+   "renderer": {
+    "ws": 29.3,
+    "priv": 40.4,
+    "cpu": 0.243
+   },
+   "gpu": {
+    "ws": 134.6,
+    "priv": 163.5,
+    "cpu": 0.752
+   },
+   "total": {
+    "ws": 210.7,
+    "cpu": 1.052
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 178,
+   "renderer": {
+    "ws": 31.7,
+    "priv": 42.2,
+    "cpu": 0.257
+   },
+   "gpu": {
+    "ws": 125.3,
+    "priv": 160.9,
+    "cpu": 0.647
+   },
+   "total": {
+    "ws": 209.1,
+    "cpu": 0.974
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 211,
+   "renderer": {
+    "ws": 27.8,
+    "priv": 38.5,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 109,
+    "priv": 143.2,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 183.6,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 233,
+   "renderer": {
+    "ws": 25.5,
+    "priv": 36,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.5,
+    "priv": 152.1,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 198.2,
+    "cpu": 0
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 230,
+   "renderer": {
+    "ws": 24.6,
+    "priv": 36.1,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.3,
+    "priv": 159.4,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 191.1,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 236,
+   "renderer": {
+    "ws": 16,
+    "priv": 25.2,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.7,
+    "priv": 111.9,
+    "cpu": 0.013
+   },
+   "total": {
+    "ws": 139.3,
+    "cpu": 0.03
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 222,
+   "renderer": {
+    "ws": 16,
+    "priv": 25.3,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.9,
+    "priv": 111.7,
+    "cpu": 0.009
+   },
+   "total": {
+    "ws": 139.3,
+    "cpu": 0.022
+   }
+  },
+  {
+   "fw": "vue",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 227,
+   "renderer": {
+    "ws": 15.9,
+    "priv": 25.1,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.8,
+    "priv": 110.6,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 139.2,
+    "cpu": 0.017
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 186,
+   "renderer": {
+    "ws": 27.4,
+    "priv": 38.1,
+    "cpu": 0.201
+   },
+   "gpu": {
+    "ws": 109.3,
+    "priv": 144,
+    "cpu": 0.699
+   },
+   "total": {
+    "ws": 183.3,
+    "cpu": 0.921
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 177,
+   "renderer": {
+    "ws": 24.7,
+    "priv": 35.4,
+    "cpu": 0.251
+   },
+   "gpu": {
+    "ws": 108.8,
+    "priv": 141.5,
+    "cpu": 0.706
+   },
+   "total": {
+    "ws": 180,
+    "cpu": 1.001
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 180,
+   "renderer": {
+    "ws": 24.5,
+    "priv": 34.8,
+    "cpu": 0.135
+   },
+   "gpu": {
+    "ws": 108.7,
+    "priv": 142.2,
+    "cpu": 0.646
+   },
+   "total": {
+    "ws": 182.3,
+    "cpu": 0.82
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 189,
+   "renderer": {
+    "ws": 27.5,
+    "priv": 39.2,
+    "cpu": 0.277
+   },
+   "gpu": {
+    "ws": 122.8,
+    "priv": 160,
+    "cpu": 0.742
+   },
+   "total": {
+    "ws": 197.3,
+    "cpu": 1.084
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 181,
+   "renderer": {
+    "ws": 27.7,
+    "priv": 38.3,
+    "cpu": 0.275
+   },
+   "gpu": {
+    "ws": 124.4,
+    "priv": 162.7,
+    "cpu": 0.64
+   },
+   "total": {
+    "ws": 199.1,
+    "cpu": 1.002
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 179,
+   "renderer": {
+    "ws": 27.5,
+    "priv": 37.7,
+    "cpu": 0.278
+   },
+   "gpu": {
+    "ws": 124.9,
+    "priv": 162.3,
+    "cpu": 0.734
+   },
+   "total": {
+    "ws": 199.6,
+    "cpu": 1.038
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 222,
+   "renderer": {
+    "ws": 24.9,
+    "priv": 35.4,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 124.5,
+    "priv": 161.6,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 196.2,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 201,
+   "renderer": {
+    "ws": 25,
+    "priv": 35.4,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.7,
+    "priv": 160.8,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 190.6,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 216,
+   "renderer": {
+    "ws": 25.6,
+    "priv": 36.2,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.4,
+    "priv": 158.7,
+    "cpu": 0.009
+   },
+   "total": {
+    "ws": 190.8,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 214,
+   "renderer": {
+    "ws": 15.7,
+    "priv": 25.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 72.9,
+    "priv": 112.2,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 135.3,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 214,
+   "renderer": {
+    "ws": 18.4,
+    "priv": 27.3,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 73,
+    "priv": 111.1,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 140.1,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "vue-vapor",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 210,
+   "renderer": {
+    "ws": 15.7,
+    "priv": 24.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 72.7,
+    "priv": 110,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 137.7,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 187,
+   "renderer": {
+    "ws": 26.3,
+    "priv": 38.6,
+    "cpu": 0.148
+   },
+   "gpu": {
+    "ws": 108.8,
+    "priv": 141.5,
+    "cpu": 0.725
+   },
+   "total": {
+    "ws": 184.3,
+    "cpu": 0.907
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 179,
+   "renderer": {
+    "ws": 26.3,
+    "priv": 36.7,
+    "cpu": 0.213
+   },
+   "gpu": {
+    "ws": 109.7,
+    "priv": 143.8,
+    "cpu": 0.72
+   },
+   "total": {
+    "ws": 182.8,
+    "cpu": 0.976
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 179,
+   "renderer": {
+    "ws": 29.1,
+    "priv": 39.6,
+    "cpu": 0.143
+   },
+   "gpu": {
+    "ws": 108.9,
+    "priv": 143.1,
+    "cpu": 0.686
+   },
+   "total": {
+    "ws": 187.4,
+    "cpu": 0.86
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 182,
+   "renderer": {
+    "ws": 29.1,
+    "priv": 40.4,
+    "cpu": 0.238
+   },
+   "gpu": {
+    "ws": 120.6,
+    "priv": 158.9,
+    "cpu": 0.689
+   },
+   "total": {
+    "ws": 196.9,
+    "cpu": 0.971
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 222,
+   "renderer": {
+    "ws": 29.3,
+    "priv": 41.9,
+    "cpu": 0.266
+   },
+   "gpu": {
+    "ws": 120.3,
+    "priv": 157.6,
+    "cpu": 0.715
+   },
+   "total": {
+    "ws": 196.5,
+    "cpu": 1.016
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 180,
+   "renderer": {
+    "ws": 32.2,
+    "priv": 43.1,
+    "cpu": 0.243
+   },
+   "gpu": {
+    "ws": 124.7,
+    "priv": 159.5,
+    "cpu": 0.738
+   },
+   "total": {
+    "ws": 203.8,
+    "cpu": 1.02
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 227,
+   "renderer": {
+    "ws": 22.8,
+    "priv": 33.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.8,
+    "priv": 158,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 186.3,
+    "cpu": 0
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 227,
+   "renderer": {
+    "ws": 23,
+    "priv": 33.9,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.2,
+    "priv": 157.3,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 185.6,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 224,
+   "renderer": {
+    "ws": 23,
+    "priv": 34,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 116.2,
+    "priv": 157.3,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 185.6,
+    "cpu": 0.013
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 222,
+   "renderer": {
+    "ws": 15.5,
+    "priv": 24.5,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 73.2,
+    "priv": 111.8,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 135.1,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 230,
+   "renderer": {
+    "ws": 15.5,
+    "priv": 24.5,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.6,
+    "priv": 112,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 141.6,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "preact",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 218,
+   "renderer": {
+    "ws": 15.5,
+    "priv": 24.6,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.6,
+    "priv": 111.8,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 141.2,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 162,
+   "renderer": {
+    "ws": 26.7,
+    "priv": 37.2,
+    "cpu": 0.174
+   },
+   "gpu": {
+    "ws": 115.7,
+    "priv": 153.6,
+    "cpu": 0.664
+   },
+   "total": {
+    "ws": 188.9,
+    "cpu": 0.869
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 177,
+   "renderer": {
+    "ws": 26.3,
+    "priv": 36.6,
+    "cpu": 0.178
+   },
+   "gpu": {
+    "ws": 108.7,
+    "priv": 144,
+    "cpu": 0.643
+   },
+   "total": {
+    "ws": 181.3,
+    "cpu": 0.847
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "idle",
+   "coldOpenMs": 173,
+   "renderer": {
+    "ws": 26.8,
+    "priv": 37.6,
+    "cpu": 0.164
+   },
+   "gpu": {
+    "ws": 109.1,
+    "priv": 143.1,
+    "cpu": 0.708
+   },
+   "total": {
+    "ws": 185,
+    "cpu": 0.902
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 176,
+   "renderer": {
+    "ws": 31.3,
+    "priv": 41.6,
+    "cpu": 0.26
+   },
+   "gpu": {
+    "ws": 116.5,
+    "priv": 157.4,
+    "cpu": 0.699
+   },
+   "total": {
+    "ws": 194.7,
+    "cpu": 1.001
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 181,
+   "renderer": {
+    "ws": 31,
+    "priv": 41.4,
+    "cpu": 0.316
+   },
+   "gpu": {
+    "ws": 124.5,
+    "priv": 162,
+    "cpu": 0.662
+   },
+   "total": {
+    "ws": 202.6,
+    "cpu": 1.03
+   }
+  },
+  {
+   "fw": "react",
+   "page": "editor",
+   "scenario": "busy",
+   "coldOpenMs": 184,
+   "renderer": {
+    "ws": 30.5,
+    "priv": 41,
+    "cpu": 0.277
+   },
+   "gpu": {
+    "ws": 123.5,
+    "priv": 160,
+    "cpu": 0.664
+   },
+   "total": {
+    "ws": 206.4,
+    "cpu": 0.967
+   }
+  },
+  {
+   "fw": "react",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 222,
+   "renderer": {
+    "ws": 24,
+    "priv": 34.3,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.3,
+    "priv": 158.9,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 190.8,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "react",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 224,
+   "renderer": {
+    "ws": 24.6,
+    "priv": 35.1,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.9,
+    "priv": 160,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 191.7,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "react",
+   "page": "settings",
+   "scenario": "static",
+   "coldOpenMs": 220,
+   "renderer": {
+    "ws": 24.3,
+    "priv": 34.7,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 120.7,
+    "priv": 161.4,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 194,
+    "cpu": 0.004
+   }
+  },
+  {
+   "fw": "react",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 212,
+   "renderer": {
+    "ws": 16.8,
+    "priv": 25.4,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.8,
+    "priv": 111.7,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 139.8,
+    "cpu": 0
+   }
+  },
+  {
+   "fw": "react",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 204,
+   "renderer": {
+    "ws": 19.4,
+    "priv": 28.1,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.6,
+    "priv": 111.6,
+    "cpu": 0
+   },
+   "total": {
+    "ws": 142.3,
+    "cpu": 0.009
+   }
+  },
+  {
+   "fw": "react",
+   "page": "rename",
+   "scenario": "static",
+   "coldOpenMs": 216,
+   "renderer": {
+    "ws": 16.7,
+    "priv": 25.4,
+    "cpu": 0
+   },
+   "gpu": {
+    "ws": 76.8,
+    "priv": 112.2,
+    "cpu": 0.004
+   },
+   "total": {
+    "ws": 139.9,
+    "cpu": 0.013
+   }
+  }
+ ],
+ "summary": [
+  {
+   "fw": "vanilla",
+   "case": "editor/idle",
+   "coldOpenMs": 175,
+   "rendererWs": 21.8,
+   "rendererPriv": 30.5,
+   "rendererCpu": 0.16,
+   "gpuCpu": 0.66,
+   "totalWs": 178.4,
+   "totalCpu": 0.842
+  },
+  {
+   "fw": "vanilla",
+   "case": "editor/busy",
+   "coldOpenMs": 178,
+   "rendererWs": 24.2,
+   "rendererPriv": 33,
+   "rendererCpu": 0.217,
+   "gpuCpu": 0.652,
+   "totalWs": 197.9,
+   "totalCpu": 0.895
+  },
+  {
+   "fw": "vanilla",
+   "case": "settings/static",
+   "coldOpenMs": 210,
+   "rendererWs": 20.7,
+   "rendererPriv": 29.7,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 187.6,
+   "totalCpu": 0.013
+  },
+  {
+   "fw": "vanilla",
+   "case": "rename/static",
+   "coldOpenMs": 202,
+   "rendererWs": 18.1,
+   "rendererPriv": 26.8,
+   "rendererCpu": 0,
+   "gpuCpu": 0.009,
+   "totalWs": 147.8,
+   "totalCpu": 0.013
+  },
+  {
+   "fw": "svelte",
+   "case": "editor/idle",
+   "coldOpenMs": 177,
+   "rendererWs": 24.7,
+   "rendererPriv": 35.3,
+   "rendererCpu": 0.156,
+   "gpuCpu": 0.651,
+   "totalWs": 192.3,
+   "totalCpu": 0.829
+  },
+  {
+   "fw": "svelte",
+   "case": "editor/busy",
+   "coldOpenMs": 178,
+   "rendererWs": 28.1,
+   "rendererPriv": 38.4,
+   "rendererCpu": 0.283,
+   "gpuCpu": 0.683,
+   "totalWs": 202.4,
+   "totalCpu": 1.006
+  },
+  {
+   "fw": "svelte",
+   "case": "settings/static",
+   "coldOpenMs": 213,
+   "rendererWs": 25.1,
+   "rendererPriv": 35.8,
+   "rendererCpu": 0,
+   "gpuCpu": 0.004,
+   "totalWs": 187.9,
+   "totalCpu": 0.004
+  },
+  {
+   "fw": "svelte",
+   "case": "rename/static",
+   "coldOpenMs": 221,
+   "rendererWs": 15.8,
+   "rendererPriv": 24.6,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 142.7,
+   "totalCpu": 0.017
+  },
+  {
+   "fw": "solid",
+   "case": "editor/idle",
+   "coldOpenMs": 177,
+   "rendererWs": 24.4,
+   "rendererPriv": 36,
+   "rendererCpu": 0.174,
+   "gpuCpu": 0.695,
+   "totalWs": 182,
+   "totalCpu": 0.904
+  },
+  {
+   "fw": "solid",
+   "case": "editor/busy",
+   "coldOpenMs": 182,
+   "rendererWs": 29.5,
+   "rendererPriv": 39.8,
+   "rendererCpu": 0.225,
+   "gpuCpu": 0.703,
+   "totalWs": 201.2,
+   "totalCpu": 0.985
+  },
+  {
+   "fw": "solid",
+   "case": "settings/static",
+   "coldOpenMs": 223,
+   "rendererWs": 23.6,
+   "rendererPriv": 33.7,
+   "rendererCpu": 0,
+   "gpuCpu": 0.004,
+   "totalWs": 190.1,
+   "totalCpu": 0.009
+  },
+  {
+   "fw": "solid",
+   "case": "rename/static",
+   "coldOpenMs": 217,
+   "rendererWs": 15.2,
+   "rendererPriv": 24,
+   "rendererCpu": 0,
+   "gpuCpu": 0.004,
+   "totalWs": 145.6,
+   "totalCpu": 0.004
+  },
+  {
+   "fw": "vue",
+   "case": "editor/idle",
+   "coldOpenMs": 175,
+   "rendererWs": 26.9,
+   "rendererPriv": 38.3,
+   "rendererCpu": 0.173,
+   "gpuCpu": 0.655,
+   "totalWs": 190.9,
+   "totalCpu": 0.855
+  },
+  {
+   "fw": "vue",
+   "case": "editor/busy",
+   "coldOpenMs": 178,
+   "rendererWs": 29.3,
+   "rendererPriv": 40.4,
+   "rendererCpu": 0.257,
+   "gpuCpu": 0.647,
+   "totalWs": 209.1,
+   "totalCpu": 0.974
+  },
+  {
+   "fw": "vue",
+   "case": "settings/static",
+   "coldOpenMs": 230,
+   "rendererWs": 25.5,
+   "rendererPriv": 36.1,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 191.1,
+   "totalCpu": 0.004
+  },
+  {
+   "fw": "vue",
+   "case": "rename/static",
+   "coldOpenMs": 227,
+   "rendererWs": 16,
+   "rendererPriv": 25.2,
+   "rendererCpu": 0,
+   "gpuCpu": 0.009,
+   "totalWs": 139.3,
+   "totalCpu": 0.022
+  },
+  {
+   "fw": "vue-vapor",
+   "case": "editor/idle",
+   "coldOpenMs": 180,
+   "rendererWs": 24.7,
+   "rendererPriv": 35.4,
+   "rendererCpu": 0.201,
+   "gpuCpu": 0.699,
+   "totalWs": 182.3,
+   "totalCpu": 0.921
+  },
+  {
+   "fw": "vue-vapor",
+   "case": "editor/busy",
+   "coldOpenMs": 181,
+   "rendererWs": 27.5,
+   "rendererPriv": 38.3,
+   "rendererCpu": 0.277,
+   "gpuCpu": 0.734,
+   "totalWs": 199.1,
+   "totalCpu": 1.038
+  },
+  {
+   "fw": "vue-vapor",
+   "case": "settings/static",
+   "coldOpenMs": 216,
+   "rendererWs": 25,
+   "rendererPriv": 35.4,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 190.8,
+   "totalCpu": 0.009
+  },
+  {
+   "fw": "vue-vapor",
+   "case": "rename/static",
+   "coldOpenMs": 214,
+   "rendererWs": 15.7,
+   "rendererPriv": 25.7,
+   "rendererCpu": 0,
+   "gpuCpu": 0.004,
+   "totalWs": 137.7,
+   "totalCpu": 0.013
+  },
+  {
+   "fw": "preact",
+   "case": "editor/idle",
+   "coldOpenMs": 179,
+   "rendererWs": 26.3,
+   "rendererPriv": 38.6,
+   "rendererCpu": 0.148,
+   "gpuCpu": 0.72,
+   "totalWs": 184.3,
+   "totalCpu": 0.907
+  },
+  {
+   "fw": "preact",
+   "case": "editor/busy",
+   "coldOpenMs": 182,
+   "rendererWs": 29.3,
+   "rendererPriv": 41.9,
+   "rendererCpu": 0.243,
+   "gpuCpu": 0.715,
+   "totalWs": 196.9,
+   "totalCpu": 1.016
+  },
+  {
+   "fw": "preact",
+   "case": "settings/static",
+   "coldOpenMs": 227,
+   "rendererWs": 23,
+   "rendererPriv": 33.9,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 185.6,
+   "totalCpu": 0.013
+  },
+  {
+   "fw": "preact",
+   "case": "rename/static",
+   "coldOpenMs": 222,
+   "rendererWs": 15.5,
+   "rendererPriv": 24.5,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 141.2,
+   "totalCpu": 0.004
+  },
+  {
+   "fw": "react",
+   "case": "editor/idle",
+   "coldOpenMs": 173,
+   "rendererWs": 26.7,
+   "rendererPriv": 37.2,
+   "rendererCpu": 0.174,
+   "gpuCpu": 0.664,
+   "totalWs": 185,
+   "totalCpu": 0.869
+  },
+  {
+   "fw": "react",
+   "case": "editor/busy",
+   "coldOpenMs": 181,
+   "rendererWs": 31,
+   "rendererPriv": 41.4,
+   "rendererCpu": 0.277,
+   "gpuCpu": 0.664,
+   "totalWs": 202.6,
+   "totalCpu": 1.001
+  },
+  {
+   "fw": "react",
+   "case": "settings/static",
+   "coldOpenMs": 222,
+   "rendererWs": 24.3,
+   "rendererPriv": 34.7,
+   "rendererCpu": 0,
+   "gpuCpu": 0.004,
+   "totalWs": 191.7,
+   "totalCpu": 0.004
+  },
+  {
+   "fw": "react",
+   "case": "rename/static",
+   "coldOpenMs": 212,
+   "rendererWs": 16.8,
+   "rendererPriv": 25.4,
+   "rendererCpu": 0,
+   "gpuCpu": 0,
+   "totalWs": 139.9,
+   "totalCpu": 0.009
+  }
+ ],
+ "sizes": {
+  "vanilla": {
+   "jsKB": 7.2,
+   "jsGzKB": 3.4,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  },
+  "svelte": {
+   "jsKB": 47.9,
+   "jsGzKB": 19.1,
+   "cssKB": 7.2,
+   "cssGzKB": 2.4
+  },
+  "solid": {
+   "jsKB": 24.8,
+   "jsGzKB": 10.1,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  },
+  "vue": {
+   "jsKB": 77.4,
+   "jsGzKB": 30.1,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  },
+  "vue-vapor": {
+   "jsKB": 67.7,
+   "jsGzKB": 25.8,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  },
+  "preact": {
+   "jsKB": 28.2,
+   "jsGzKB": 11.2,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  },
+  "react": {
+   "jsKB": 222.7,
+   "jsGzKB": 69.5,
+   "cssKB": 7.2,
+   "cssGzKB": 2.3
+  }
+ }
+}

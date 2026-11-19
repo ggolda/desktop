@@ -247,3 +247,72 @@ learned, where we stopped, what's next.
 - Found `video.ts` preview-position polling (500 ms, also tracks position — kept).
 - Owner field report: production ~2.6 GB vs PoC ~600 MB while streaming with chat.
 - Wrote [POC-REPORT.md](POC-REPORT.md) for the main team; chapter 1 ("minimal changes") closed.
+
+## 2026-11-18 — Chapter 2 kickoff: architecture for 2027+
+
+- Owner goals: PERFORMANCE, MODULARITY, FUTURE-PROOF. Requirements: keep the current auto-updater and
+  distribution logic; don't touch the OBS backend (only how we talk to it); deliverable to existing
+  users through the existing update mechanism. Optional features (app store, vision, …) as modules that
+  can be disabled and not loaded; media backend abstracted (OBS = one implementation). Carte blanche on
+  framework / state / CSS (owner likes UnoCSS + Tailwind preset + shadcn); Vite if compatible.
+- Owner decisions: **Windows + macOS** first-class; **100 % compatible**: external API, platform apps
+  API, user data, slobs:// links; **one big release**; framework choice **performance first**.
+- Discovery (3 parallel read-only investigations), saved in chapter2/: distribution (differential
+  per-file updater; whole new architecture deliverable via normal app update if layout/exe/userData/
+  bootstrap contract stay; generalized bundle updater + privileged scheme needed for Vite/ESM),
+  OBS (OSN is N-API, client can move to a utilityProcess; blockers are our wrapper/remote/ipcRenderer;
+  MediaBackend sketch), modules (31 forced @InitAfter inits; one 67-feature dependency cycle; core →
+  optional edges listed; extension points needed; compatibility surfaces).
+
+## 2026-11-18 — Owner answers (chapter 2)
+
+- External API: must stay compatible with **everything reachable today** (incl. internal-service
+  fallback) → legacy compatibility layer + generated catalog as contract.
+- Disabled-module data: explained (kept verbatim) — to confirm in the module discussion.
+- Multi-canvas: core. Modules: owner thinks of "big modules talking over a bus, like OBS plugins" →
+  draft in chapter2/modules-proposal.md for discussion.
+- Kevin: on demand (no socket at startup).
+- **Bundle hotfixes must keep working for all JS** (windows, modules, core process), atomic sets,
+  self-heal — owner reminded that the frontend is updated separately; release tooling for hotfix
+  manifests is outside the repo (owner to identify owner/format).
+- Framework experiments started: experiments/framework-bench/ (isolated npm project; Vite 8, UnoCSS
+  66 + Tailwind reset; mock core in utilityProcess over MessagePort; sandboxed windows; vanilla
+  reference; ports by parallel agents: Svelte 5, Solid 1.9 (Solid 2 tooling not stable), Vue 3.6 RC
+  classic + Vapor, Preact 11 + signals, React 19).
+
+## 2026-11-18 — Framework micro-benchmark results
+
+- Full run: 7 implementations × 4 cases × 3 runs, no errors. Results in
+  [chapter2/framework-bench-results.md](chapter2/framework-bench-results.md).
+- Finding: a framework costs +2–7 MB per window over plain DOM. The spread between frameworks is
+  about 2.5–3.5 MB. Cold open is identical (about 175 ms editor, about 210–230 ms dialogs). Idle CPU
+  is the same for all; busy CPU is 0.22 % (vanilla) to 0.28 %. Bundles: Solid 10 KB → React 70 KB
+  gzip. **The framework is not the bottleneck**: the Electron base and the GPU process dominate.
+- Side finding: 8 DOM meter bars at 10 Hz cost about 0.65 % in the GPU process in every framework,
+  including vanilla. Meter rendering design is a separate experiment.
+- Recommendation to the owner: Svelte 5 or Solid (performance first, shadcn-style headless libs);
+  React is viable if migration cost dominates. Optional scale test before deciding.
+- **Owner decision: Vue 3** (company stack), with tooling from the Highlighter app → ADR-0007 (sandboxed
+  windows and the existing distribution kept; Pinia as a window-local view of core state).
+- Module discussion: the plugin-style design (manifests/slots/contribution points) was rejected by the
+  owner as too complex. Revised direction: **modular monolith with lazy feature packages** (core incl.
+  platforms; big optional features in `features/*` with lazy service + UI, public `api.ts`, a
+  hand-written registry, lint-enforced boundaries). See modules-proposal.md §10.
+
+## 2026-11-19 — Chapter 2 agreement checkpoint
+
+- Module model agreed: one-way dependencies (features → core), core wires features only via
+  `features/registry.ts` (nav / go-live extras / settings pages / docks read from it), features load on
+  first use (tab open or opted-in event), core = only what streaming needs (platform adapters lazy).
+- RAM estimate for the new architecture: typical idle ~250–270 MB (range 215–315); core process not
+  measured. The owner declined the extra core-process experiment; it will be measured during
+  implementation.
+- Next: write chapter2/SPEC.md; open items listed for the owner (release tooling/hotfix manifest,
+  mac signing, Electron/OSN version, design, master-sync strategy, feature list, who disables).
+- Owner answers: no new native modules; Electron 45.x; ignore master (short rework); no mac signing or
+  tests; keep the current look; feature list OK; enablement = code + user flags; no isolation at first;
+  coding by Sonnet subagents (ADR-0008). Owner did not know the hotfix tooling, so the hotfix flow was
+  explained in SPEC §8.3, with an action to confirm the upload of the whole bundles/ dir.
+- **chapter2/SPEC.md v0.1 written** (process model, IPC/state, media backend, modular monolith, UI,
+  compat, build/distribution incl. hotfix v2, milestones M0–M6, risks).
+- Hotfix: keep the existing manifest format (logical → hashed name + md5 checksums, flat bundles/); only generalize the file list (SPEC §8.3).
