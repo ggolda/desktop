@@ -33,6 +33,8 @@ const scale = 30;
 const barsCount = Math.round(progress * scale);
 
 console.log('\n\nStrict nulls migration progress');
-console.log(`[${ '#'.repeat(barsCount) }${ '-'.repeat(scale - barsCount) }] ${ Math.round(progress * 100)}%`);
+console.log(
+  `[${'#'.repeat(barsCount)}${'-'.repeat(scale - barsCount)}] ${Math.round(progress * 100)}%`,
+);
 console.log('migrated:', migratedFiles.length, 'files', migratedLines, 'lines');
 console.log('total:', allFiles.length, 'files', allLines, 'lines');

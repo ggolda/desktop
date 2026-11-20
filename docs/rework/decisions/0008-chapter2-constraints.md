@@ -8,7 +8,7 @@
 2. **Electron 45.x** for the reworked app.
 3. **Ignore master.** The rework is short, and `reborn` is a clean rewrite.
 4. **macOS:** keep it compiling. Signing and testing are out of scope.
-5. **Look:** keep the current look, rebuilt with the new stack (ADR-0007).
+5. **Look:** UI/UX parity with legacy: same layout, icons, fonts, colors and interactions, rebuilt with the new stack (ADR-0007). Pixel perfection is not required, but it must not look like a different app (tightened 2026-11-20, SPEC R10 / §6.1).
 6. **Feature list** confirmed (SPEC §5.4). Feature enablement = code registry + user/server flags +
    local setting.
 7. **No per-feature process isolation** initially. Everything runs in the core process.

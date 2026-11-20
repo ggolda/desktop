@@ -1,0 +1,15 @@
+node_modules
+legacy
+bundles
+build
+dist
+updater
+vendor
+media
+shared-resources
+experiments
+docs
+electron-builder
+slobs-virtual-cam-installer
+src/types
+package-lock.json

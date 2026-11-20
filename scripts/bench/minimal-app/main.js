@@ -3,9 +3,18 @@
 const { app, BrowserWindow, contentTracing } = require('electron');
 const path = require('path');
 app.whenReady().then(() => {
-  const opts = { width: 1469, height: 870, backgroundColor: '#17242D', alwaysOnTop: true, webPreferences: { contextIsolation: true, sandbox: true } };
+  const opts = {
+    width: 1469,
+    height: 870,
+    backgroundColor: '#17242D',
+    alwaysOnTop: true,
+    webPreferences: { contextIsolation: true, sandbox: true },
+  };
   const main = new BrowserWindow(opts);
-  main.loadFile(path.join(__dirname, process.env.FLOOR_CONTENT ? 'content.html' : 'index.html'), process.env.FLOOR_PULSE ? { search: 'pulse' } : undefined);
+  main.loadFile(
+    path.join(__dirname, process.env.FLOOR_CONTENT ? 'content.html' : 'index.html'),
+    process.env.FLOOR_PULSE ? { search: 'pulse' } : undefined,
+  );
   if (process.env.FLOOR_HIDDEN) {
     const hidden = new BrowserWindow({ ...opts, show: false });
     hidden.loadFile(path.join(__dirname, 'index.html'));

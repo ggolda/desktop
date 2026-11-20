@@ -36,3 +36,14 @@ shared-resources/ai-highlighter/*
 
 # Benchmark runs and fixtures (fixtures contain auth tokens)
 .bench/
+
+# legacy yarn (moved with the legacy app)
+legacy/.yarn/*
+!legacy/.yarn/patches
+!legacy/.yarn/plugins
+!legacy/.yarn/releases
+!legacy/.yarn/sdks
+!legacy/.yarn/versions
+
+# UI screenshots / test output
+test-results/

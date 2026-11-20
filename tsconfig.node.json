@@ -1,0 +1,26 @@
+{
+  // Node-side code: main process, preload, core process, build configs.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": [
+    "src/main/**/*",
+    "src/core/**/*",
+    "src/shared/**/*",
+    "src/features/**/*.ts",
+    "vite.*.ts",
+    "uno.config.ts"
+  ]
+}

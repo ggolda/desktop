@@ -25,14 +25,29 @@ async function record() {
   fs.rmSync(runDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   fs.cpSync(fixture, path.join(runDir, 'appdata'), { recursive: true });
-  const app = spawn(path.join(repo, 'node_modules/electron/dist/electron.exe'), [repo, '--skip-update', '--local-bundles'], {
-    cwd: repo,
-    env: { ...process.env, NODE_ENV: 'production', SLOBS_CACHE_DIR: path.join(runDir, 'appdata'), SLOBS_BENCH_OUT: outDir, SLOBS_BENCH_SCENARIO: opt('scenario', 'S2') },
-    stdio: 'ignore',
-  });
+  const app = spawn(
+    path.join(repo, 'node_modules/electron/dist/electron.exe'),
+    [repo, '--skip-update', '--local-bundles'],
+    {
+      cwd: repo,
+      env: {
+        ...process.env,
+        NODE_ENV: 'production',
+        SLOBS_CACHE_DIR: path.join(runDir, 'appdata'),
+        SLOBS_BENCH_OUT: outDir,
+        SLOBS_BENCH_SCENARIO: opt('scenario', 'S2'),
+      },
+      stdio: 'ignore',
+    },
+  );
   const events = () => {
     try {
-      return fs.readFileSync(path.join(outDir, 'events.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
+      return fs
+        .readFileSync(path.join(outDir, 'events.jsonl'), 'utf8')
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .map(l => JSON.parse(l));
     } catch (e) {
       return [];
     }
@@ -70,13 +85,25 @@ function analyze(file) {
   const drawing = layers.filter(l => l.drawsContent);
   const area = l => (l.w * l.h) / 1e6;
   const totalArea = drawing.reduce((s, l) => s + area(l), 0);
-  console.log(`layers: ${layers.length} total, ${drawing.length} draw content, ${totalArea.toFixed(2)} Mpx (CSS px) of content`);
+  console.log(
+    `layers: ${layers.length} total, ${drawing.length} draw content, ${totalArea.toFixed(2)} Mpx (CSS px) of content`,
+  );
   const reasons = {};
-  for (const l of drawing) for (const r of l.reasons.length ? l.reasons : ['(root/none)']) reasons[r] = (reasons[r] || 0) + 1;
-  console.log('compositing reasons (drawing layers):', Object.entries(reasons).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ×${v}`).join(', '));
+  for (const l of drawing)
+    for (const r of l.reasons.length ? l.reasons : ['(root/none)'])
+      reasons[r] = (reasons[r] || 0) + 1;
+  console.log(
+    'compositing reasons (drawing layers):',
+    Object.entries(reasons)
+      .sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `${k} ×${v}`)
+      .join(', '),
+  );
   console.log('largest drawing layers:');
   for (const l of [...drawing].sort((a, b) => area(b) - area(a)).slice(0, 30))
-    console.log(`  ${String(l.w).padStart(5)}×${String(l.h).padEnd(5)} ${area(l).toFixed(3).padStart(6)} Mpx paints=${String(l.paintCount).padStart(4)}  ${l.reasons.join(',') || '-'}  ${l.node}`);
+    console.log(
+      `  ${String(l.w).padStart(5)}×${String(l.h).padEnd(5)} ${area(l).toFixed(3).padStart(6)} Mpx paints=${String(l.paintCount).padStart(4)}  ${l.reasons.join(',') || '-'}  ${l.node}`,
+    );
 }
 
 const file = argv.includes('--analyze') ? opt('analyze') : await record();

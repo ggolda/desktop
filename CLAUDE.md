@@ -1,178 +1,90 @@
 # CLAUDE.md
 
-> **Active initiative — Performance Rework.** If your task is part of the rework
-> (idle CPU/RAM reduction, toolchain upgrade, benchmarking, stack consolidation),
-> **read `docs/rework/README.md` first** and follow its working protocol.
-> **The current architecture and dependencies are NOT constraints for the rework**
-> (ADR-0004) — but follow the agreed phase plan (measure → fix → re-measure); the
-> architecture draft in `docs/rework/architecture-vision.md` is parked for the final phase. The rest
-> of this file describes the *current* (legacy) code — reference for understanding and
-> migrating it, not rules for the new design.
+This is **Streamlabs Desktop "reborn"**: a clean rewrite of the Electron + OBS streaming app on the
+`reborn` branch. **Read `docs/rework/README.md` first.** The specification is
+`docs/rework/chapter2/SPEC.md`, and decisions are in `docs/rework/decisions/`. The old app lives in
+`legacy/`. It is reference only and not built; its guide is `legacy/CLAUDE.md`.
 
-## Performance rules — top priority (read before touching UI or services)
+## Performance rules: top priority
+This app runs next to games and an encoder. Rationale and measurements are in
+`docs/rework/performance-guidelines.md`.
+- No continuous animation on persistent UI (`infinite` animations, looping spinners, pulses). If one
+  is essential, drive it from JS at ≤ 10 updates/s and stop it when hidden or unfocused.
+- No permanent `requestAnimationFrame` loops, and no polling of observable state. Use events,
+  observers and subscriptions.
+- Live data only at visible rates (meters ≤ 15 Hz, stats 1 Hz), and only while visible.
+- Nothing hidden "for speed": no warm hidden windows or pages. Create on demand, destroy after.
+- Measure before and after (`scripts/bench/`, `docs/rework/benchmarking.md`).
 
-Performance is the **#1 priority** (this app runs next to games and an encoder). Full rationale
-and measurements: `docs/rework/performance-guidelines.md`.
+## Hard requirements (SPEC §1, ADR-0008)
+- The auto-updater, distribution, install layout, exe name and userData (`%APPDATA%/slobs-client`)
+  stay as today. Hotfix bundles (`updater/bundle-updater.ts`, existing manifest format) must keep
+  working.
+- Don't modify the OBS backend (obs64 and obs-studio-node binaries or their installation). Only our
+  calls into it may change.
+- **No new native modules.** Only the existing prebuilt ones (installed by
+  `scripts/install-native-deps.js`). Electron 45.x.
+- 100 % compatibility: External API, Platform Apps API, user data, `slobs://` links.
+- **Dev runs never use the real profile.** Unpackaged builds use `slobs-client-reborn-dev`
+  (override with `SLOBS_USERDATA_DIR`). Never write to `%APPDATA%\slobs-client` from dev or tests.
 
-- **No continuous animation in always-visible UI**: no `animation: … infinite`, looping
-  spinners (`fa-spin`/`fa-pulse`), glows or pulsing indicators on persistent elements. One such
-  animation forces a full frame every display refresh (~2 % CPU on a 240 Hz laptop, even on an
-  empty page). If essential: drive from JS at ≤ 10 updates/s and stop when hidden/unfocused.
-- **No per-frame loops or polling**: no permanent `requestAnimationFrame` loops, no `setInterval`
-  for observable state — use events, `ResizeObserver`, `MutationObserver`, subscriptions.
-- **Live data at visible rate only** (≤ 1–10 updates/s), nothing while nobody can see it.
-- **Nothing hidden "for speed"**: no warm hidden windows/BrowserViews/pages; create on demand.
-- **Services must not import UI modules** (they end up in the worker bundle).
-- **Measure before/after** with `scripts/bench/` (`docs/rework/benchmarking.md`).
+## UI/UX parity with legacy (SPEC R10, §6.1): hard requirement
+Every screen must look and behave like the legacy app: same layout, icons (legacy `icomoon` icon
+font + Font Awesome, **not** lucide), Roboto, colors, spacing, sizes and interactions. Rebuild it
+with Vue 3 + UnoCSS + shadcn-vue, restyling the components to the legacy look. Start each screen
+from legacy reference screenshots (`docs/rework/ui-reference/`) and the legacy component and LESS
+sources (`legacy/app/components-react/`, `legacy/app/styles/`). Pixel perfection is not required;
+looking like a different app is a bug.
 
-Guidance for AI agents working in this repository. Keep this file lean — it loads
-into every session. Deep architecture lives in `ARCHITECTURE.md` (read it when a
-change touches the window/service/state/IPC model).
+## Automation safety
+Never send real OS mouse or keyboard input (SendKeys, `mouse_event`, `keybd_event`, moving the real
+cursor) when driving the app; the owner uses the machine meanwhile. Drive windows through
+CDP/Playwright or app-level hooks only, and capture with PrintWindow, which needs no focus.
 
-This is **Streamlabs Desktop** (`slobs-client`): an Electron live‑streaming app
-built on OBS. Large, old, and mid‑migration on two fronts (Vue → React for UI,
-Vuex → Realm/React for state), with several non‑obvious invariants. Read the
-relevant service before editing it; prefer targeted reads over broad assumptions.
+## Commands (npm, never yarn)
+| Task | Command |
+| --- | --- |
+| Dev (Vite HMR for windows, watch main/preload/core, run Electron) | `npm run dev` |
+| Production build | `npm run build` |
+| Run last build | `npm start` |
+| Typecheck (fast self-verify) | `npm run typecheck` |
+| Lint | `npm run lint` |
+| Unit tests | `npm test` |
+| Smoke (launches the app, checks core, OBS and window; quits) | `npm run smoke` |
 
-## Commands
+`npm install` re-extracts placeholder native tarballs; `postinstall` restores the real binaries. If
+you ever use `--ignore-scripts`, run `node scripts/postinstall.js` afterwards.
 
-Package manager is **Yarn Berry (3.1.1)** — never use `npm`.
+## Architecture in one screen (SPEC §2–§5)
+- `src/main/`: the thin Electron main process. It lives in app.asar and is **not hotfixable**, so
+  keep it minimal. It handles lifecycle, the updaters, windows, protocols, the MessagePort broker
+  and Electron-only APIs for core.
+- `src/core/`: the core `utilityProcess` (Node, no DOM). It holds all domain logic and state, the
+  obs-studio-node client (only in `src/core/media/obs/`) and the External API.
+- `src/preload/`: one sandboxed preload. It exposes only `connectCore()` and window controls.
+- `src/windows/<name>/`: per-window Vite entries (Vue 3). Windows are sandboxed; no Node, no
+  `@electron/remote`.
+- `src/ui/`: shared Vue components (shadcn-vue in `src/ui/components/ui/`), theme, core client and
+  composables.
+- `src/shared/`: contracts (types) and utilities usable everywhere (no Node, no DOM).
+- `src/features/<name>/`: optional features. `service.ts` runs in core (lazy), `ui/` holds Vue
+  (lazy), and `api.ts` is the public surface. Features are wired in **only** via
+  `src/features/registry.ts`.
 
-| Task                | Command                 | Notes                                                                                                                         |
-| ------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Lint + format       | `yarn eslint`           | Prettier runs _through_ ESLint (`eslint-plugin-prettier`). `eslint --fix` formats.                                            |
-| Typecheck           | `yarn typecheck`        | **Fast self-verify.** `tsc --noEmit` for the app + React. Use this to check changes instead of a full build or the e2e suite. |
-| Iterative dev build | `yarn watch`            | Webpack watch; use this while developing.                                                                                     |
-| One‑shot dev build  | `yarn compile`          | Slow: clears `bundles/media` and rebuilds everything. Don't run casually.                                                     |
-| Run the app         | `yarn start`            | Launches Electron against the last build.                                                                                     |
-| Single test file    | `yarn test:file <path>` | Compiles tests, runs one file.                                                                                                |
-| Full test suite     | `yarn test`             | **Heavy/slow e2e** — see Testing below. Don't run unless asked.                                                               |
+Import boundaries are enforced by ESLint:
+- core never imports windows, ui, `.vue` files or features (except the registry);
+- windows and ui never import core or main;
+- features import only core's public API, shared, ui and other features' `api.ts`.
 
-For a fast type check without a full build, run **`yarn typecheck`** — it runs
-`tsc --noEmit` for the non‑React app (`tsconfig.json`) and for `app/components-react`
-(its stricter config, `strictNullChecks: true`). This is the quickest way to verify
-your changes; reserve `yarn compile` and the e2e suite for when you actually need
-them. (The build still typechecks via `ts-loader`; tests compile via `tsc -p test`.)
+**State:** core is the source of truth. Windows subscribe to slices (snapshot plus patches) and
+call commands. Pinia stores in windows wrap `useSlice()` plus local UI state, and never persist
+anything themselves.
 
 ## Code style
+TypeScript and Vue 3 `<script setup>`, formatted by Prettier (single quotes, width 100). UnoCSS
+(Tailwind wind3 preset) with shadcn-vue. Match the surrounding code, and keep the theme in CSS
+variables (`src/ui/theme.css`, values from the legacy night theme).
 
-- TypeScript, formatted by Prettier via ESLint. **Don't memorize the rules** —
-  let `yarn eslint` (`--fix`) apply them, and match the surrounding file.
-- `strictNullChecks` is **intentionally OFF** globally. Do **not** enable it
-  repo‑wide. A subset of files opts in via `strict-null-check-files/` +
-  `SLOBS_STRICT_NULLS`; only add to that set deliberately.
-
-## Architecture in one screen
-
-Multi‑window Electron app. Every window runs the _same_ JS bundle but plays a
-different role:
-
-- **worker** — invisible, persistent renderer that runs the **entire services
-  layer**. All service methods actually execute here.
-- **main** — the primary UI window.
-- **child** — kept warm in the background for things like Source Properties.
-- plus transient **one‑off** windows (projectors, pop‑outs), apps, webviews.
-
-The UI windows (main, child, one‑off) **don't run services** — they call them
-remotely. A call from any non‑worker window is sent to the **Electron main
-process** (`main.js`), which forwards it to the **worker** window, then routes the
-result back to the originating window. Note: the _main process_ (`main.js`, Node)
-is the router — **not** the _main window_, which is just another UI client.
-
-**Services** (`app/services/`) are strict singletons holding all domain logic.
-Normal application code reaches a service through the `@Inject()` decorator. They're
-registered in `app/app-services.ts`.
-
-## State — know which mechanism to use
-
-State management is **mid‑migration**. For new code, choose by scope:
-
-- **UI‑only state** → React state (`useState` / hooks), local to the component.
-- **Service state that must sync across windows/processes** → **Realm**
-  (`RealmObject` / `RealmService` in `app/services/realm.ts`), which replicates
-  across all processes. React reads it via `app/components-react/hooks/realm.ts`.
-
-Much existing service state still lives in **Vuex** via `StatefulService<TState>`
-(read through `this.state`, mutated only via `@mutation()` methods). You'll
-maintain it where it already exists, but **don't reach for Vuex for new state.**
-
-See `ARCHITECTURE.md` for the full model and the _why_ behind the sharp edges.
-
-## Hard rules (these are easy to get wrong)
-
-1. **Vuex mutations are pure.** When editing an existing `StatefulService`, a
-   `@mutation()` method may touch only `this.state` and its own arguments — no side
-   effects, no calling other services, no async. In dev a Proxy enforces this and
-   throws (`app/services/core/stateful-service.ts:49`).
-2. **Calling a service from a UI window — pick the right form:**
-   - `Service.actions.method()` — **default**. Async, fire‑and‑forget, returns
-     `void`.
-   - `Service.actions.return.method()` — async **with** a return value (resolves
-     when the worker finishes). Use sparingly.
-   - `Service.method()` (omit `.actions`) — **synchronous**; it blocks the calling
-     UI process and logs a console warning. Avoid except where absolutely
-     necessary — it degrades the user experience.
-   - Reads: use `views` (Vuex) or read Realm objects directly.
-3. **Register new services** in `app/app-services.ts` — it's hand‑maintained, not
-   generated. A service that isn't registered won't resolve.
-4. **New UI is React.** Functional components + hooks only, in
-   `app/components-react/` (`.tsx`). Vue (`app/components/`, `.vue`) is legacy and
-   frozen — only touch it to migrate a component to React.
-5. **Don't edit generated/build output:** `bundles/`, `*.g.less`, `updater/build/`,
-   `dist/`, `test-dist/`, `docs/dist/`.
-6. **Honor in‑code warnings.** Respect `DO NOT CALL` / `@warning` markers — e.g.
-   `app/services/sources/sources.ts` `updatePropertiesManagerSettingsInStore`,
-   and the deprecated method in `app/services/video.ts`.
-
-## Conventions
-
-- Filenames map to classes: `foo-bar.ts` → `class FooBarService`.
-- Common decorators: `@Inject()` (DI), `@mutation()` (Vuex mutation),
-  `@InitAfter('OtherService')` (ordered init), `@InheritMutations()`.
-- Service lifecycle hooks: `init()` (once per app) → `mounted()` (once per window)
-  → `afterInit()`.
-- Cross‑service / cross‑window events use **RxJS** `Subject`s.
-
-## Alert type `apiKey` field naming
-
-When adding a new alert type to `alerts-config.ts`, the `apiKey` field must match
-the **backend field prefix**, not the internal alert type name. For example,
-an alert previously had the alert type `twitter_subscription` in the repository
-but because the backend returns settings with keys like `twitter_sub_image_href`,
-not `twitter_subscription_image_href`, it requires `apiKey: 'twitter_sub'`,
-not `twitter_subscription_*`. The variation field parser in `AlertBoxModule.setData()`
-uses `${apiKey}_` prefix matching (see `app/components-react/widgets/useAlertBox.tsx`
-line 207). Mismatching this causes variation settings to fail initialization silently,
-leading to UI freezes. Also map internal alert types to API endpoints in
-`WidgetsService.playAlert()` (`app/services/widgets/widgets.ts`) if the backend uses
-a different name there.
-
-## Testing
-
-Tests are **integration/e2e via WebdriverIO** — they launch the real Electron app
-and drive it, run **serially**, and are slow. They are not fast unit tests. Run a
-single file with `yarn test:file <path>` when iterating; avoid the full `yarn test`
-suite (and `yarn package`) unless explicitly asked.
-
-## Where things live
-
-| Path                                      | What                                                           |
-| ----------------------------------------- | -------------------------------------------------------------- |
-| `main.js`                                 | Electron main process: windows, IPC routing, updater, logging. |
-| `app/app.ts`                              | Renderer bootstrap (services, i18n, Sentry).                   |
-| `app/app-services.ts`                     | Central service registry.                                      |
-| `app/services/`                           | All services (domain logic).                                   |
-| `app/services/core/`                      | Service base, `StatefulService`, DI, mutations.                |
-| `app/services/realm.ts`                   | Realm‑backed cross‑process state.                              |
-| `app/services-manager.ts`                 | Service instantiation + IPC proxying.                          |
-| `app/services/api/internal-api-client.ts` | Client side of cross‑window service calls.                     |
-| `app/store/`                              | Vuex store + cross‑window mutation sync (legacy).              |
-| `app/components-react/`                   | React UI (current).                                            |
-| `app/components/`                         | Vue UI (legacy).                                               |
-| `test/`                                   | e2e/stress/screen/performance tests + helpers.                 |
-
-## Useful env vars (dev)
-
-`SLOBS_REPORT_TO_SENTRY`, `SLOBS_PRODUCTION_DEBUG` (open dev tools on start),
-`SLOBS_CACHE_DIR`, `SLOBS_FORCE_AUTO_UPDATE`, `SLOBS_STRICT_NULLS`. See README for
-the full list.
+## Working method
+Coding is done by Sonnet subagents with narrow briefs. The main session writes the briefs and
+verifies the result (typecheck, lint, tests, smoke, review) before accepting it.

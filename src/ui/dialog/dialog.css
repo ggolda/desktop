@@ -1,0 +1,269 @@
+/* Dialog window chrome: legacy ModalLayout / antd modal footer, buttons and form inputs (night theme). */
+
+.dlg-body {
+  box-sizing: border-box;
+  padding: 24px 18px 24px 24px; /* + the 6 px scrollbar gutter = 24 */
+}
+
+/* legacy antd default Button / .button--default */
+.button-default {
+  box-sizing: border-box;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--button);
+  border-radius: 4px;
+  background-color: var(--button);
+  color: var(--paragraph);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.button-default:hover:not(:disabled) {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+  color: var(--title);
+}
+.button-default:focus {
+  outline: none;
+}
+.button-default:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.button-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* legacy .ant-input / .ant-select (night): transparent field, grey border, teal focus */
+.sl-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 4px 11px;
+  border: 1px solid var(--button);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--paragraph);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5715;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.sl-input:hover:not(:disabled) {
+  border-color: var(--icon);
+}
+.sl-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(128, 245, 210, 0.2);
+  color: var(--title);
+}
+.sl-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+textarea.sl-input {
+  height: auto;
+  min-height: 32px;
+  resize: vertical;
+  display: block;
+}
+.sl-input--solid {
+  background: var(--solid-input);
+}
+select.sl-input {
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23bdc2c4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  cursor: pointer;
+}
+select.sl-input option {
+  background: var(--solid-input);
+  color: var(--paragraph);
+}
+
+/* legacy checkbox (styles/checkboxes.less): 16px box, teal when checked */
+.sl-check {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  line-height: 22px;
+}
+.sl-check input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--button);
+  border-radius: 2px;
+  background: transparent;
+  cursor: inherit;
+  transition: all 0.2s;
+}
+.sl-check input:hover:not(:disabled) {
+  border-color: var(--teal);
+}
+.sl-check input:checked {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+.sl-check input:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--action-button-text);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.sl-check input:focus-visible {
+  box-shadow: 0 0 0 2px rgba(128, 245, 210, 0.3);
+}
+.sl-check input:disabled {
+  opacity: 0.5;
+}
+.sl-check--on {
+  color: var(--title);
+  font-weight: 500;
+}
+/* legacy React form (antd checkbox): white box, regular label */
+.sl-check--plain input:checked {
+  border-color: var(--checkbox, #fff);
+  background: var(--checkbox, #fff);
+}
+.sl-check--plain.sl-check--on {
+  font-weight: 400;
+}
+.sl-check--plain {
+  gap: 12px;
+}
+
+/* legacy SwitchInput (antd Switch, small) */
+.sl-toggle {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  box-sizing: border-box;
+  width: 28px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 100px;
+  background: var(--button);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+.sl-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--section);
+  transition: left 0.2s;
+}
+.sl-toggle[aria-checked='true'] {
+  background: var(--teal);
+}
+.sl-toggle[aria-checked='true']::after {
+  left: 14px;
+}
+.sl-toggle:focus {
+  outline: none;
+}
+.sl-toggle:focus-visible {
+  box-shadow: 0 0 0 2px rgba(128, 245, 210, 0.3);
+}
+
+/* legacy Vue/React slider with the two-arrow handle */
+.sl-range {
+  --p: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.sl-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--button);
+}
+.sl-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 24px;
+  height: 14px;
+  margin-top: -3px;
+  border-radius: 7px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='14'%3E%3Cpath d='M9 4 5.5 7 9 10z M15 4l3.5 3L15 10z' fill='%2309161d'/%3E%3C/svg%3E");
+}
+.sl-range:focus {
+  outline: none;
+}
+.sl-range:disabled {
+  opacity: 0.5;
+}
+
+/* legacy .ant-menu vertical list (Add Existing Source) */
+.sl-menu-item {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 24px;
+  margin: 0;
+  color: var(--paragraph);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sl-menu-item:hover {
+  color: var(--title);
+}
+.sl-menu-item[aria-selected='true'] {
+  color: var(--title);
+  background: #2d4a47;
+}
+
+/* legacy Scrollable: 6 px thumb in the button colour */
+.dlg-scroll {
+  scrollbar-gutter: stable; /* the scrollbar sits in the padding, content width never changes (legacy) */
+}
+.dlg-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.dlg-scroll::-webkit-scrollbar-thumb {
+  background: var(--button);
+  border-radius: 3px;
+}
+
+/* compact footer buttons of the legacy Vue form window (Cancel / Done) */
+.dlg-footer--sm .button-default,
+.dlg-footer--sm .button-action {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  line-height: 28px;
+}

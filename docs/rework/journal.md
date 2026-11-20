@@ -316,3 +316,105 @@ learned, where we stopped, what's next.
 - **chapter2/SPEC.md v0.1 written** (process model, IPC/state, media backend, modular monolith, UI,
   compat, build/distribution incl. hotfix v2, milestones M0–M6, risks).
 - Hotfix: keep the existing manifest format (logical → hashed name + md5 checksums, flat bundles/); only generalize the file list (SPEC §8.3).
+
+## 2026-11-19 — M0 started
+
+- **Native gate passed** (experiments/native-gate): Electron 45.4.1 (Node 24.22, ABI 150). All 10 existing
+  prebuilt natives load in main and in a utilityProcess, with no rebuild. OSN works fully from a
+  utilityProcess (init 1.7 s, scene and source created and read, clean shutdown 5.2 s; obs64 exits
+  about 12 s after disconnect). Core utilityProcess memory: empty 21 MB private, with all natives
+  and OSN init 73 MB private (120 MB working set).
+- M0 scaffold delegated to a Sonnet agent: legacy → legacy/, npm + Vite + Vue 3 + Electron 45 project
+  in src/ (main / preload / core / windows), smoke test.
+- **M0 scaffold done** (verified): legacy/ moved with history; npm + Vite 7 + Vue 3.5 + Electron 45.4.1;
+  src/{main,core,preload,windows,ui,shared,features}; ESLint boundary rules; smoke: OBS init ≈1 s,
+  window shown ≈160 ms, ping ≈1.5 ms. CLAUDE.md rewritten for the new layout (old one in legacy/CLAUDE.md).
+- **M0 protocol done** (verified): call/result, sub/snapshot/patch (recording proxy, ops s/d/x/l, batched
+  per microtask, rev + resubscribe), events, lazy slice factories, meters channel only while subscribed;
+  vitest 20/20. A rename in a 60-item list gives a 75 B patch.
+- **M0 distribution done** (verified): manifest in the existing format (logical → hashed, md5), bundle
+  updater generalized (same flags and flow), slbundle:// via protocol.handle (privileged) + CSP header,
+  core/preload loaded from the complete active set dir (core-loader.cjs sets NODE_PATH), legacy startup
+  flow (bootstrap/mac updater, crash-handler, slobs://), electron-builder files updated, Vue 2 updater
+  UI → static page. test:hotfix 13/13 (good set / bad md5 → local / offline → cached); packaged
+  win-unpacked runs. Open: crash-handler clean exit (in progress), release-engineering upload check.
+- Crash handler: core is unregistered before shutdown, then terminateCrashHandler. Smoke runs with the
+  handler on: exit 0, nothing left over. Killing core → handler terminates the app (as legacy); obs64 is
+  orphaned in that case (TODO M1: obs64 cleanup on core crash).
+- **Skeleton RAM** (private WS, idle, 25–45 s after start; Vue window + core with OSN initialized):
+  Electron tree **157 MB** (largest process 88 MB, others 30/17/16/7), CPU 0 %. obs64 35 MB and
+  crash-handler 2 MB are outside the tree.
+- Remaining M0 exit item: install over a prod build via the real full-update flow (needs a CDN-hosted
+  build or a local mirror plus a disposable prod install) and the release-engineering upload check.
+
+## 2026-11-20 — M1 started (media core and editor)
+
+- M1a design (Sonnet): chapter2/m1-design.md + contracts (scenes, sources, audio, display, collections,
+  main-rpc). Key finding: collection files are `JSON.stringify(x, null, 2)`; parse → serialize is
+  byte-exact on all 5 fixture files → document model that re-emits unchanged nodes, dirty tracking by
+  command (legacy rebuilds the whole file from OBS on every save).
+- Decisions on open questions: blocking OSN calls accepted (instrumented, revisit at >50 ms stalls);
+  unavailable sources kept and shown as unavailable; dirty saves + full re-read at shutdown and
+  collection switch; dual output / transitions editing / hotkeys / filters / widgets / guest cam
+  preserved verbatim and inert in M1; OBS config files are never written in M1.
+- M1b launched as 3 parallel Sonnet agents: core (backend, OBS adapter, collections, slices), editor UI
+  (current look, fake core for tests), main (native-handle RPC, obs64 orphan cleanup, window state).
+- **M1b done** (verified: build/typecheck/lint, 115 tests, smoke, test:collections on all fixtures).
+  Real run with the typical fixture: collection ready ≈1.5 s after core start (OSN init ≈0.9 s,
+  createSources ≈0.56 s); live preview and real scenes/sources/mixer. **Electron tree ≈198 MB idle,
+  0 % CPU** (core + Vue editor + OBS preview). The collection file is untouched on load (a .bak copy
+  is written, as legacy does). obs64 needs up to ~25 s to exit after quit.
+- Found in the real run → M1c fix agent: mixer shows -Inf for volume 1, default menu bar, preview
+  bg/padding colors, gap above the dock, real meters untested.
+- M1c fixes (verified, 116 tests): fader volume applied from the collection (OSN volume readback is
+  garbage right after createSources), real meters verified (test:meters, ≤13 frames/s, off when
+  blurred), menu bar removed, preview padding color linearised (OBS encodes it to sRGB), gap fixed.
+  Open: OBS doesn't draw the selection box yet.
+- **Owner: UI/UX must look and behave like legacy** (the first editor used lucide icons, a different
+  layout and styles). Recorded in SPEC R10 + new §6.1 (parity process: reference screenshots → same
+  assets/structure/behavior → side-by-side check), ADR-0008, CLAUDE.md, memory. Reference capture
+  started: legacy worktree at b995c47ff run on a temp profile (SLOBS_CACHE_DIR) with fixture
+  collections → docs/rework/ui-reference/editor/.
+- **Editor rebuilt to legacy parity** (Sonnet, verified: 118 tests, smoke, lint/typecheck): frameless
+  window + legacy title bar, top nav, preview / Mini Feed / dock with resize bars, footer, icomoon +
+  Font Awesome + bundled Roboto, legacy colors and sizes from metrics.json, native context menus via a
+  typed main RPC, Name dialog (legacy has no inline rename), legacy preview padding color restored,
+  lucide removed. Side-by-side composites in test-results/parity/editor/ (legacy | new | diff).
+  Remaining differences: widget icons (type not in the slice), disabled unimplemented menu items,
+  mixer scrollbar style, Mini Feed inert.
+- Note: src/ was still untracked in git when this was written. The owner should commit to protect the work.
+- **Editor overlay done** (verified: 171 tests, smoke, collections): OBS selection box fixed (root
+  cause: bulk addItems has no video context; now per-item scene.add with the canvas context, as
+  legacy). Click select / ctrl / cycle, drag with snapping, resize with aspect lock (Shift frees),
+  Alt-crop, nudge, Delete, native preview menus; geometry fetched on demand from core
+  (editor.getGeometry), transforms ≤30/s with the exact final value, no rAF. Nav bottom border added.
+  Behavior deviations to align with legacy: Delete confirms (legacy doesn't), Shift+arrow = 10 px
+  (legacy has none), 2 px drag threshold.
+- Incident: an agent's real-mouse test clicked into the owner's browser. New rule: no real OS input
+  (CLAUDE.md "Automation safety", memory).
+- Behavior alignment: legacy DOES confirm Delete (global-selection.ts:62; the earlier claim was
+  wrong), so the confirmation stays. Arrows only nudge unmodified; drag starts on the first move.
+  Folder-selection setting deferred to M3 (settings).
+- Dialogs design (m1-dialogs-design.md + contracts dialogs/source-types/properties + main-rpc
+  dialogWindow/dialog.showOpen) and 24 legacy dialog references in ui-reference/dialogs/. Legacy:
+  one unparented non-modal child window replaced in place; edits are live; Cancel/Done/Close only
+  close; Add Source → name → Source Properties. Decisions: as legacy; feature source types hidden;
+  probe OSN `modified` behavior first; font-manager (existing prebuilt) loaded lazily; Advanced Audio
+  and undo deferred to M3.
+- Dialogs implementation launched: A (core + main) and B (dialog UIs, legacy parity) in parallel.
+- Dialogs A (core + main) done: OSN probe confirms re-reading properties applies `modified`
+  callbacks; dialog window manager (one unparented frameless window replaced in place), catalogue
+  (17 types), Add Source orchestration, properties slice with diff and fonts via lazy font-manager,
+  legacy creation defaults fixed. Dialogs B (UI) done: 6 thin dialog entries, a form for every
+  property kind, legacy parity side-by-sides in test-results/parity/dialogs/ (close match).
+  Verified: 232 tests, smoke, collections.
+- E2E dialogs agent launched (real UI over CDP on real OBS: add/rename/properties/remove,
+  persistence, dialog cold-open timing, memory with a dialog open).
+- **E2E dialogs green** (test:dialogs, 70 assertions, rerun by me): add/rename scene, Add Source →
+  name → properties replaced in place, image file / color / text + 263 fonts / browser custom fps,
+  Cancel doesn't revert, add existing, Delete + confirm, properties of a removed source auto-close,
+  persistence across restart. Bugs fixed: a reactive proxy can't be structured-cloned (send plain
+  arrays); sources without scene items are now removed (legacy scenes.ts:693-702 removes unreachable
+  non-channel sources).
+- **Dialog cold open 84–125 ms** (budget 250). Memory: Electron 187 MB without dialog → 215 MB with
+  Source Properties → 183 MB after closing (back to baseline).

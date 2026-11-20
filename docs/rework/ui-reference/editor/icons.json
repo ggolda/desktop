@@ -1,0 +1,1042 @@
+{
+  "1280x800": {
+    "titlebar": [
+      {
+        "tag": "img",
+        "classes": "titlebar-icon___1n0x1",
+        "parent": "titlebar___1RMxS",
+        "size": "32x16",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)",
+        "src": "bundles/media/icon-31d026e1a3260a7482e1bae044a5baaf.ico"
+      },
+      {
+        "tag": "i",
+        "classes": "fas fa-sync",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-subtract",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-expand-1",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-close",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "nav": [
+      {
+        "tag": "i",
+        "classes": "icon-studio",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(128, 245, 210)"
+      },
+      {
+        "tag": "i",
+        "classes": "fas fa-th-large",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-themes",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-store",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-highlighter",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-cloudbot",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-ai",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-ultra",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-dual-output",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-studio-mode-3",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-question",
+        "parent": "ant-menu-item",
+        "size": "16x16",
+        "fontSize": "16px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "ant-menu-item",
+        "size": "16x16",
+        "fontSize": "16px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "img",
+        "classes": "user-profile-image___2FDxp",
+        "parent": "user-profile___1X3Zd",
+        "size": "24x24",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)",
+        "src": "bundles/media/user-3a6d5c35a009dd22bc3c647442da4270.png"
+      }
+    ],
+    "preview": [],
+    "minifeed": [
+      {
+        "tag": "i",
+        "classes": "icon-filter",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-pause",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-skip",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-notifications-off",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "fa fa-volume-up",
+        "parent": "top-bar___CIAgH",
+        "size": "16x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "panel-scenes": [
+      {
+        "tag": "svg",
+        "classes": "",
+        "parent": "anticon",
+        "size": "10x10",
+        "fontSize": "10px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-add-circle icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-transition icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      }
+    ],
+    "panel-sources": [
+      {
+        "tag": "i",
+        "classes": "icon-add-circle icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-smart-record icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-add-folder icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-alert-box",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-image",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-editor-9",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-webcam",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      }
+    ],
+    "panel-mixer": [
+      {
+        "tag": "i",
+        "classes": "icon-settings icon-button",
+        "parent": "studio-controls-top",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "show-advanced-audio"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "footer": [
+      {
+        "tag": "i",
+        "classes": "icon-leaderboard-4",
+        "parent": "flex",
+        "size": "26x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-notifications",
+        "parent": "ant-badge",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-replay-buffer",
+        "parent": "circle-button",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      }
+    ]
+  },
+  "1920x1080": {
+    "titlebar": [
+      {
+        "tag": "img",
+        "classes": "titlebar-icon___1n0x1",
+        "parent": "titlebar___1RMxS",
+        "size": "32x16",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)",
+        "src": "bundles/media/icon-31d026e1a3260a7482e1bae044a5baaf.ico"
+      },
+      {
+        "tag": "i",
+        "classes": "fas fa-sync",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-subtract",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-expand-1",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-close",
+        "parent": "titlebar-actions___l-7ZJ",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "nav": [
+      {
+        "tag": "i",
+        "classes": "icon-studio",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(128, 245, 210)"
+      },
+      {
+        "tag": "i",
+        "classes": "fas fa-th-large",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-themes",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-store",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-highlighter",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-cloudbot",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-ai",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-ultra",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-dual-output",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-studio-mode-3",
+        "parent": "ant-menu-item",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-question",
+        "parent": "ant-menu-item",
+        "size": "16x16",
+        "fontSize": "16px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "ant-menu-item",
+        "size": "16x16",
+        "fontSize": "16px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "img",
+        "classes": "user-profile-image___2FDxp",
+        "parent": "user-profile___1X3Zd",
+        "size": "24x24",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)",
+        "src": "bundles/media/user-3a6d5c35a009dd22bc3c647442da4270.png"
+      }
+    ],
+    "preview": [],
+    "minifeed": [
+      {
+        "tag": "i",
+        "classes": "icon-filter",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-pause",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-skip",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-notifications-off",
+        "parent": "top-bar___CIAgH",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "fa fa-volume-up",
+        "parent": "top-bar___CIAgH",
+        "size": "16x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "panel-scenes": [
+      {
+        "tag": "svg",
+        "classes": "",
+        "parent": "anticon",
+        "size": "10x10",
+        "fontSize": "10px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-add-circle icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-transition icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      }
+    ],
+    "panel-sources": [
+      {
+        "tag": "i",
+        "classes": "icon-add-circle icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-smart-record icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-add-folder icon-button icon-button--lg",
+        "parent": "top-container___1K9fB",
+        "size": "15x15",
+        "fontSize": "15px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-alert-box",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-image",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-editor-9",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-webcam",
+        "parent": "ant-tree-switcher",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-unlock",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-view",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-trash",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-settings",
+        "parent": "source-title-container___Im4C1",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      }
+    ],
+    "panel-mixer": [
+      {
+        "tag": "i",
+        "classes": "icon-settings icon-button",
+        "parent": "studio-controls-top",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "show-advanced-audio"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-audio",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)",
+        "hint": "click to switch off"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-button icon-settings",
+        "parent": "controls___h8Xy5",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(145, 151, 154)"
+      }
+    ],
+    "footer": [
+      {
+        "tag": "i",
+        "classes": "icon-leaderboard-4",
+        "parent": "flex",
+        "size": "26x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-notifications",
+        "parent": "ant-badge",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      },
+      {
+        "tag": "i",
+        "classes": "icon-replay-buffer",
+        "parent": "circle-button",
+        "size": "14x14",
+        "fontSize": "14px",
+        "color": "rgb(189, 194, 196)"
+      }
+    ]
+  }
+}

@@ -26,7 +26,7 @@ else is optional, and costs nothing until used.
 | R7 | Windows and macOS both supported at code level. **macOS signing and testing are out of scope** for this rework; it must still build. |
 | R8 | One big release. Master is ignored; the rework is a clean rewrite on `reborn`. |
 | R9 | Electron **45.x**. |
-| R10 | The **current look** is kept and rebuilt with the new stack. Small visual differences are acceptable. |
+| R10 | **UI/UX parity with legacy (owner, 2026-11-20): every screen must look and behave like the legacy app** — same layout, same icons (legacy icon font `icomoon` + Font Awesome as used today), same fonts (Roboto), same colors, spacing, sizes, panel structure, controls and interactions — rebuilt with Vue 3 + UnoCSS + shadcn-vue. Pixel perfection is not required, but a user must not notice a different app. No redesigns, no substitute icon sets (e.g. lucide) for legacy icons. See §6.1. |
 
 ### 1.2 Budgets (verified with `scripts/bench/` and enforced in CI)
 | Metric (Electron tree, Task Manager "Memory") | Today (prod) | Chapter 1 PoC | **Target** |
@@ -258,10 +258,26 @@ marketing/announcements, cloud sync and remote control.
     directives) with @unocss/reset;
   - unplugin-auto-import and unplugin-vue-components;
   - vue-tsc.
-- **Current look (R10):** the existing LESS theme variables (night/day/prime themes) are ported to
+- **UI/UX parity (R10, §6.1):** the existing LESS theme variables (night/day/prime themes) are ported to
   CSS variables and UnoCSS theme tokens. shadcn-vue components are restyled to match the current
   components (buttons, inputs, modals, tabs, dropdowns, sliders). There is a visual reference check
   per screen against the legacy app.
+### 6.1 UI/UX parity process (R10)
+1. **Reference first.** Before a screen is built, capture reference screenshots of the legacy app for
+   that screen at 1280×800 and 1920×1080, plus hover and active states and open menus. Store them in
+   `docs/rework/ui-reference/<screen>/`, and record the legacy component and LESS sources used.
+2. **Same assets.** Reuse the legacy assets: the icon fonts (`media/fonts/icomoon.woff` and the
+   classes in `legacy/app/styles/custom-icons.less`, plus Font Awesome from `vendor/`), Roboto, images
+   and the exact LESS variable values (colors, spacing, radii, font sizes, row heights). Port them to
+   CSS variables and UnoCSS tokens.
+3. **Same structure.** The DOM and layout follow the legacy component tree: title bar, side nav,
+   editor layout variants, dock resize bars, panel headers, list rows, footer. shadcn-vue
+   components are restyled to the legacy look; their default look is never used.
+4. **Same behavior.** Interactions match legacy: hover-only row actions, context menus, inline
+   rename, drag and drop, keyboard shortcuts, tooltips, empty states.
+5. **Check.** Every screen is compared side by side with its reference (screenshot diff in
+   `test-results/`). A screen is done only when the owner can't tell them apart at a glance.
+
 - **i18n:** existing locale JSON files are reused. Each window or feature loads only its namespaces,
   on demand.
 - **Lists:** the source list, scene list and app lists are virtualized when larger than about 100

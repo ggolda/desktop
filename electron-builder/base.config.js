@@ -8,27 +8,20 @@ const base = {
   productName: 'Streamlabs Desktop',
   icon: 'media/images/icon.ico',
   files: [
+    // Main process (Vite CJS bundle). package.json is always included by electron-builder.
+    'build/main/**',
+    // Window/core/preload set + manifest.json; source maps stay out of the installer.
     'bundles',
-    '!bundles/*.js.map',
+    '!bundles/*.map',
     'node_modules',
-    // The `electron` npm package is a devDependency, but two production deps
-    // (@electron/remote, react-devtools-electron) peer-depend on it, so it lands in
-    // the production tree. Its dist/ is a full second copy of the Electron runtime
-    // (~348MB) that smart-unpack then extracts into app.asar.unpacked. Nothing needs
-    // it: index.js only resolves the binary path for development, and in a packaged
-    // app require('electron') resolves to the built-in module.
+    // The `electron` npm package is a devDependency, but it can land in the production tree.
+    // Its dist/ is a full second copy of the Electron runtime (~348MB). Nothing needs it: in a
+    // packaged app require('electron') resolves to the built-in module.
     '!node_modules/electron',
-    'vendor',
-    'app/i18n',
-    'app/util/shutdown-coordinator.js',
-    'media/images/game-capture',
+    // Updater: plain tsc output + the static progress window pages (loaded by main at runtime).
     'updater/build/bootstrap.js',
     'updater/build/bundle-updater.js',
     'updater/index.html',
-    'index.html',
-    'worker.html', // worker-only bundle page (docs/rework)
-    'main.js',
-    'obs-api',
     'updater/mac/index.html',
     'updater/mac/Updater.js',
   ],
@@ -65,6 +58,7 @@ const base = {
     // assistedInstaller.nsh. Requires electron-builder >= 23.0.6.
     removeDefaultUninstallWelcomePage: true,
   },
+  // obs-studio-node is NOT listed: electron-builder's smart unpack extracts it (native .node/.dll/.exe).
   asarUnpack : ["**/node-libuiohook/**", "**/node-fontinfo/**", "**/font-manager/**", "**/game_overlay/**","**/color-picker/**"],
   publish: {
     provider: 'generic',

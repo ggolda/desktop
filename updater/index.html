@@ -1,12 +1,40 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="../vendor/foundation.min.css" />
-    <link href="../vendor/roboto.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../vendor/fontawesome-free-5.13.0-web/css/all.css" />
-    <script src="../bundles/updater.js"></script>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'"
+    />
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      body {
+        font-family: Roboto, 'Segoe UI', Arial, sans-serif;
+        background-color: #17242d;
+        color: #fff;
+        font-size: 18px;
+        text-align: center;
+        padding: 32px;
+        box-sizing: border-box;
+        -webkit-app-region: drag;
+      }
+      .sub { font-size: 13px; margin-top: 16px; color: #bdc2c4; }
+      .icon { margin-right: 8px; }
+      .percent { color: #bdc2c4; font-size: 14px; margin: 16px 0 24px; }
+      .bar-container { margin-top: 40px; background: #09161d; border-radius: 4px; overflow: hidden; }
+      .bar { height: 8px; width: 0; background: #31c3a2; }
+      .issues { font-size: 13px; font-weight: 300; padding-top: 25px; -webkit-app-region: no-drag; }
+      .link { color: #bbb; cursor: pointer; }
+      .link:hover { color: #eee; }
+      [hidden] { display: none; }
+    </style>
+    <title>Streamlabs Desktop</title>
   </head>
   <body>
-    <div id="app"></div>
+    <!-- Bundle-update progress window (shown by bundle-updater.ts after 10 s). Static page. -->
+    <div><span class="icon">&#8635;</span>Downloading Updates</div>
+    <div class="sub">
+      Streamlabs Desktop is downloading updates. This can take several minutes.
+    </div>
   </body>
 </html>

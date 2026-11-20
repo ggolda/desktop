@@ -1,0 +1,18 @@
+{
+  // Tests: Node environment, exercise core + ui client together (not subject to src import boundaries).
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": ["test/**/*.ts", "vitest.config.ts", "src/windows/env.d.ts"]
+}

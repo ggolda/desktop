@@ -1,12 +1,81 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="../../vendor/foundation.min.css" />
-    <link href="../../vendor/roboto.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../../vendor/fontawesome-free-5.15.3-web/css/all.css" />
-    <script src="../../bundles/updater.js"></script>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'"
+    />
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      body {
+        font-family: Roboto, 'Segoe UI', Arial, sans-serif;
+        background-color: #17242d;
+        color: #fff;
+        font-size: 18px;
+        text-align: center;
+        padding: 32px;
+        box-sizing: border-box;
+        -webkit-app-region: drag;
+      }
+      .sub { font-size: 13px; margin-top: 16px; color: #bdc2c4; }
+      .icon { margin-right: 8px; }
+      .percent { color: #bdc2c4; font-size: 14px; margin: 16px 0 24px; }
+      .bar-container { margin-top: 40px; background: #09161d; border-radius: 4px; overflow: hidden; }
+      .bar { height: 8px; width: 0; background: #31c3a2; }
+      .issues { font-size: 13px; font-weight: 300; padding-top: 25px; -webkit-app-region: no-drag; }
+      .link { color: #bbb; cursor: pointer; }
+      .link:hover { color: #eee; }
+      [hidden] { display: none; }
+    </style>
+    <title>Streamlabs Desktop</title>
   </head>
   <body>
-    <div id="app"></div>
+    <!-- macOS app-update window (updater/mac/Updater.js, nodeIntegration). Plain JS, no framework. -->
+    <div><span class="icon">&#8635;</span><span id="message">Checking for updates</span></div>
+    <div id="progress" hidden>
+      <div class="percent" id="percent"></div>
+      <div class="bar-container"><div class="bar" id="bar"></div></div>
+    </div>
+    <div class="issues" id="installing" hidden>
+      This may take a few minutes. If you are having issues updating, please
+      <span class="link" data-download>download a fresh installer.</span>
+    </div>
+    <div class="issues" id="error" hidden>
+      There was an error updating. Please
+      <span class="link" data-download>download a fresh installer.</span>
+    </div>
+    <script>
+      const { ipcRenderer, shell } = require('electron');
+      const $ = id => document.getElementById(id);
+      let installing = false;
+      let failed = false;
+      ipcRenderer.on('autoUpdate-pushState', (event, data) => {
+        if (data.version) $('message').textContent = `Downloading version ${data.version}`;
+        if (data.percent) {
+          const pct = Math.floor(data.percent);
+          $('percent').textContent = `${pct}% complete`;
+          $('bar').style.width = `${pct}%`;
+        }
+        if (data.installing) {
+          installing = true;
+          $('message').textContent = `Installing version ${data.version}`;
+        }
+        if (data.error) {
+          failed = true;
+          $('message').textContent = 'Something went wrong';
+        }
+        $('progress').hidden = installing || failed || $('percent').textContent === '';
+        $('installing').hidden = !installing || failed;
+        $('error').hidden = !failed;
+      });
+      document.querySelectorAll('[data-download]').forEach(el =>
+        el.addEventListener('click', () => {
+          shell.openExternal('https://streamlabs.com/streamlabs-obs');
+          window.close(); // Updater.js quits the app when its window closes unfinished
+        }),
+      );
+      ipcRenderer.send('autoUpdate-getState');
+    </script>
   </body>
 </html>

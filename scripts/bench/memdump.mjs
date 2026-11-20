@@ -4,12 +4,19 @@
 // Without labels, processes are named by their trace process_name metadata.
 import fs from 'node:fs';
 const [file, ...labelArgs] = process.argv.slice(2);
-const labels = new Map(labelArgs.map(a => { const [p, l] = a.split('='); return [Number(p), l]; }));
+const labels = new Map(
+  labelArgs.map(a => {
+    const [p, l] = a.split('=');
+    return [Number(p), l];
+  }),
+);
 const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
 const evs = Array.isArray(raw) ? raw : raw.traceEvents;
 const names = new Map();
 for (const e of evs) if (e.ph === 'M' && e.name === 'process_name') names.set(e.pid, e.args.name);
-for (const e of evs) if (e.ph === 'M' && e.name === 'process_labels' && e.args?.labels) names.set(e.pid, (names.get(e.pid) || '') + ' ' + e.args.labels);
+for (const e of evs)
+  if (e.ph === 'M' && e.name === 'process_labels' && e.args?.labels)
+    names.set(e.pid, (names.get(e.pid) || '') + ' ' + e.args.labels);
 const dumps = new Map();
 for (const e of evs) {
   if (e.ph !== 'v' || !e.args?.dumps) continue;
@@ -24,7 +31,9 @@ for (const [pid, d] of dumps) {
   const l = labels.get(pid) || names.get(pid) || 'pid ' + pid;
   if (want && !want.test(l)) continue;
   const t = d.t || {};
-  console.log(`\n[${l}] (pid ${pid}) private_footprint=${mb(t.private_footprint_bytes).toFixed(1)}MB`);
+  console.log(
+    `\n[${l}] (pid ${pid}) private_footprint=${mb(t.private_footprint_bytes).toFixed(1)}MB`,
+  );
   const depth = Number(process.env.DEPTH || 2);
   const rows = Object.entries(d.a || {})
     .filter(([n]) => n.split('/').length <= depth)

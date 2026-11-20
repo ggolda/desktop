@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streamlabs Desktop (dialogs, fake core)</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- Dev only: a dialog against the in-memory fake core, no Electron. Not part of the build.
+         /dialog-fake/index.html?kind=source-properties&type=text_gdiplus (see fake.ts for the query) -->
+    <script type="module" src="./fake.ts"></script>
+  </body>
+</html>

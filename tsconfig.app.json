@@ -1,0 +1,21 @@
+{
+  // Window + preload code: Vue + DOM. Never sees src/core or src/main (also enforced by ESLint).
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
+  },
+  "include": ["src/windows/**/*", "src/preload/**/*", "src/ui/**/*", "src/shared/**/*", "src/features/**/*.vue", "src/types/**/*.d.ts"]
+}

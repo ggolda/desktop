@@ -69,7 +69,11 @@ const memtrace = flag('memtrace');
 
 let plans; // each plan = list of scenarios walked through in one launch
 if (seq) {
-  plans = [opt('scenarios', 'S2,S1u,S0,S1').split(',').map(s => s.trim())];
+  plans = [
+    opt('scenarios', 'S2,S1u,S0,S1')
+      .split(',')
+      .map(s => s.trim()),
+  ];
 } else {
   const s = opt('scenario', 'all');
   plans = (s === 'all' ? SCENARIOS : [s]).map(x => [x]);
@@ -79,8 +83,11 @@ if (!['sequence', 'single'].includes(mode)) die(`unknown mode ${mode}`);
 if (!label) die('--label is required');
 if (!plans.flat().every(s => SCENARIOS.includes(s))) die('unknown scenario');
 if (!fs.existsSync(path.join(fixture, 'slobs-client')))
-  die(`fixture not found: ${fixture}\\slobs-client — create one with scripts/bench/make-fixture.mjs`);
-if (!fs.existsSync(path.join(repo, 'bundles', 'manifest.json'))) die('no build in bundles/ — run yarn compile:production');
+  die(
+    `fixture not found: ${fixture}\\slobs-client — create one with scripts/bench/make-fixture.mjs`,
+  );
+if (!fs.existsSync(path.join(repo, 'bundles', 'manifest.json')))
+  die('no build in bundles/ — run yarn compile:production');
 
 function die(msg) {
   console.error(`bench: ${msg}`);
@@ -102,7 +109,9 @@ function machineInfo() {
   const display = ps(
     '(Get-CimInstance Win32_VideoController | Where-Object CurrentHorizontalResolution | ForEach-Object { "$($_.CurrentHorizontalResolution)x$($_.CurrentVerticalResolution)@$($_.CurrentRefreshRate)" }) -join "; "',
   );
-  const ac = ps('(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus -ErrorAction SilentlyContinue | Select-Object -First 1).PowerOnline');
+  const ac = ps(
+    '(Get-CimInstance -Namespace root/wmi -ClassName BatteryStatus -ErrorAction SilentlyContinue | Select-Object -First 1).PowerOnline',
+  );
   const plan = ps('powercfg /getactivescheme');
   const build = ps('(Get-CimInstance Win32_OperatingSystem).BuildNumber');
   return {
@@ -120,7 +129,9 @@ function appInfo() {
   const pkg = JSON.parse(fs.readFileSync(path.join(repo, 'package.json'), 'utf8'));
   let electron = '';
   try {
-    electron = JSON.parse(fs.readFileSync(path.join(repo, 'node_modules/electron/package.json'), 'utf8')).version;
+    electron = JSON.parse(
+      fs.readFileSync(path.join(repo, 'node_modules/electron/package.json'), 'utf8'),
+    ).version;
   } catch (e) {}
   return { version: pkg.version, electron };
 }
@@ -154,7 +165,9 @@ async function runOnce(plan, n, machine) {
     const esc = recDir.replace(/\\/g, '\\\\'); // ini files use doubled backslashes
     fs.writeFileSync(
       ini,
-      fs.readFileSync(ini, 'utf8').replace(/^(FilePath|RecFilePath|FFFilePath)=[^\r\n]*/gm, (m, k) => `${k}=${esc}`),
+      fs
+        .readFileSync(ini, 'utf8')
+        .replace(/^(FilePath|RecFilePath|FFFilePath)=[^\r\n]*/gm, (m, k) => `${k}=${esc}`),
     );
   }
 
@@ -188,7 +201,11 @@ async function runOnce(plan, n, machine) {
       SLOBS_BENCH_SCENARIO: plan[0],
       ...extraEnv,
     },
-    stdio: ['ignore', fs.openSync(path.join(runDir, 'stdout.log'), 'w'), fs.openSync(path.join(runDir, 'stderr.log'), 'w')],
+    stdio: [
+      'ignore',
+      fs.openSync(path.join(runDir, 'stdout.log'), 'w'),
+      fs.openSync(path.join(runDir, 'stderr.log'), 'w'),
+    ],
   });
   const rootPid = app.pid;
   let exited = false;
@@ -282,10 +299,13 @@ async function runOnce(plan, n, machine) {
       const out = ps(
         `(Get-Process -Id ${gpuPid}).Modules | Sort-Object ModuleMemorySize -Descending | Select-Object -First 20 | ForEach-Object { "$($_.ModuleName)=$([math]::Round($_.ModuleMemorySize/1MB,1))" }`,
       );
-      gpuModules = out.split(/\s+/).filter(Boolean).map(x => {
-        const [n, mb] = x.split('=');
-        return { module: n, imageMB: Number(mb) };
-      });
+      gpuModules = out
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(x => {
+          const [n, mb] = x.split('=');
+          return { module: n, imageMB: Number(mb) };
+        });
     }
   }
 
@@ -335,7 +355,19 @@ async function runOnce(plan, n, machine) {
     leftoverProcesses: leftovers.map(pid => tree.get(pid)?.name || String(pid)),
   };
 
-  const result = buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, phases, segments, shutdown, error });
+  const result = buildResult({
+    name,
+    machine,
+    samples,
+    cmdlines,
+    tree,
+    rootPid,
+    outDir,
+    phases,
+    segments,
+    shutdown,
+    error,
+  });
   result.env = extraEnv;
   result.preCommand = preCommand;
   result.gpuInfo = gpuInfoEvent || null;
@@ -366,7 +398,9 @@ function treeMembers(samples, rootPid) {
 
 function alivePids(pids) {
   if (!pids.length) return [];
-  const out = ps(`Get-Process -Id ${pids.join(',')} -ErrorAction SilentlyContinue | ForEach-Object { $_.Id }`);
+  const out = ps(
+    `Get-Process -Id ${pids.join(',')} -ErrorAction SilentlyContinue | ForEach-Object { $_.Id }`,
+  );
   return out.split(/\s+/).filter(Boolean).map(Number);
 }
 
@@ -386,7 +420,8 @@ function loadAppMetrics(outDir) {
 
 // Native OBS side (obs64 + its helpers, e.g. CEF obs-browser-page for browser sources/widgets).
 // Reported separately from the Electron target.
-const isNativeName = name => name.startsWith('obs64') || name.startsWith('obs-') || name.startsWith('win-streamlabs');
+const isNativeName = name =>
+  name.startsWith('obs64') || name.startsWith('obs-') || name.startsWith('win-streamlabs');
 
 function cmdSummary(cmd) {
   // exe name + flag names (+ value of --type / --utility-sub-type), no paths, tokens or URLs
@@ -444,13 +479,27 @@ const r1 = x => (x == null ? null : Math.round(x * 10) / 10);
 const r2 = x => (x == null ? null : Math.round(x * 100) / 100);
 const MB = 1024 * 1024;
 
-function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, phases, segments, shutdown, error }) {
+function buildResult({
+  name,
+  machine,
+  samples,
+  cmdlines,
+  tree,
+  rootPid,
+  outDir,
+  phases,
+  segments,
+  shutdown,
+  error,
+}) {
   const cores = os.cpus().length;
   // names of outside processes that held the foreground (explains failed focus checks)
   const otherFg = [...new Set(samples.map(s => s.fg).filter(pid => pid && !tree.has(pid)))];
   const fgNames = new Map();
   if (otherFg.length) {
-    ps(`Get-Process -Id ${otherFg.join(',')} -ErrorAction SilentlyContinue | ForEach-Object { "$($_.Id)=$($_.ProcessName)" }`)
+    ps(
+      `Get-Process -Id ${otherFg.join(',')} -ErrorAction SilentlyContinue | ForEach-Object { "$($_.Id)=$($_.ProcessName)" }`,
+    )
       .split(/\s+/)
       .filter(Boolean)
       .forEach(x => {
@@ -460,7 +509,8 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
   }
   const metrics = loadAppMetrics(outDir);
   const labels = new Map();
-  for (const [pid, info] of tree) labels.set(pid, labelFor(pid, info.name, rootPid, metrics, cmdlines));
+  for (const [pid, info] of tree)
+    labels.set(pid, labelFor(pid, info.name, rootPid, metrics, cmdlines));
   const counts = {};
   for (const l of labels.values()) counts[l] = (counts[l] || 0) + 1;
   for (const [pid, l] of labels) if (counts[l] > 1) labels.set(pid, `${l}#${pid}`);
@@ -494,9 +544,17 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
       const priv = series(filter, 'privMB');
       const cpu = series(filter, 'cpuPct').slice(1);
       return {
-        memMB: { median: r1(median(mem)), p95: r1(pct(mem, 0.95)), max: r1(mem.length ? Math.max(...mem) : null) },
+        memMB: {
+          median: r1(median(mem)),
+          p95: r1(pct(mem, 0.95)),
+          max: r1(mem.length ? Math.max(...mem) : null),
+        },
         privateMB: { median: r1(median(priv)) },
-        cpuPct: { avg: r2(avg(cpu)), p95: r2(pct(cpu, 0.95)), max: r2(cpu.length ? Math.max(...cpu) : null) },
+        cpuPct: {
+          avg: r2(avg(cpu)),
+          p95: r2(pct(cpu, 0.95)),
+          max: r2(cpu.length ? Math.max(...cpu) : null),
+        },
       };
     };
     const byProcess = [...tree.keys()]
@@ -525,7 +583,13 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
     // is a native child window owned by obs64). Visibility/minimized from the hook.
     const frac = f => (states.length ? r2(states.filter(f).length / states.length) : null);
     const fgOwn = win.length ? r2(win.filter(t => tree.has(t.fg)).length / win.length) : null;
-    const fgOwners = [...new Set(win.map(t => (tree.has(t.fg) ? labels.get(t.fg) : `other-app:${fgNames.get(t.fg) || t.fg}`)))];
+    const fgOwners = [
+      ...new Set(
+        win.map(t =>
+          tree.has(t.fg) ? labels.get(t.fg) : `other-app:${fgNames.get(t.fg) || t.fg}`,
+        ),
+      ),
+    ];
     const notMin = frac(w => !w.minimized);
     const okFrac = {
       S0: frac(w => w.minimized),
@@ -540,7 +604,11 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
 
     return {
       scenario: seg.scenario,
-      phases: { scenarioApplied: seg.applied, sampleStart: seg.sampleStart, sampleEnd: seg.sampleEnd },
+      phases: {
+        scenarioApplied: seg.applied,
+        sampleStart: seg.sampleStart,
+        sampleEnd: seg.sampleEnd,
+      },
       electron: totals(pid => !isObs(pid)),
       native: totals(isObs),
       all: totals(() => true),
@@ -581,9 +649,15 @@ function buildResult({ name, machine, samples, cmdlines, tree, rootPid, outDir, 
     sampleSec,
     intervalMs: 1000,
     phases,
-    startup: { mainWindowShownMs: phases.mainWindowShown ? phases.mainWindowShown - phases.launch : null },
+    startup: {
+      mainWindowShownMs: phases.mainWindowShown ? phases.mainWindowShown - phases.launch : null,
+    },
     segments: segments.map(summarize),
-    processes: [...tree.keys()].map(pid => ({ pid, label: labels.get(pid), cmd: cmdSummary(cmdlines.get(pid)) })),
+    processes: [...tree.keys()].map(pid => ({
+      pid,
+      label: labels.get(pid),
+      cmd: cmdSummary(cmdlines.get(pid)),
+    })),
     webContentsAtEnd: last ? last.webContents : [],
     shutdown,
     error,
@@ -619,7 +693,19 @@ export function analyzeMemoryTrace(tracePath, processes) {
       for (const [name, a] of Object.entries(alloc)) {
         const depth = name.split('/').length;
         const top = name.split('/')[0];
-        const keep = depth === 1 || (depth === 2 && ['gpu', 'skia', 'shared_memory', 'partition_alloc', 'malloc', 'discardable', 'shared_image', 'cc'].includes(top));
+        const keep =
+          depth === 1 ||
+          (depth === 2 &&
+            [
+              'gpu',
+              'skia',
+              'shared_memory',
+              'partition_alloc',
+              'malloc',
+              'discardable',
+              'shared_image',
+              'cc',
+            ].includes(top));
         if (!keep || !a.attrs || !a.attrs.size) continue;
         const mb = hexMB(a.attrs.size.value);
         if (mb >= 0.5) sizes[name] = mb;
@@ -650,7 +736,10 @@ function writeResult(result) {
       .slice(0, 4)
       .map(p => `${p.label} ${Math.round(p.memMB)}`)
       .join(', ');
-    const flags = [result.error && `ERROR: ${result.error}`, s.scenarioCheck === false && 'scenario-check-failed']
+    const flags = [
+      result.error && `ERROR: ${result.error}`,
+      s.scenarioCheck === false && 'scenario-check-failed',
+    ]
       .filter(Boolean)
       .join('; ');
     const row = `| [${result.name}](${result.name}.json) | ${result.name.slice(0, 10)} | ${result.label} | ${s.scenario} | ${s.electron.memMB.median} | ${s.electron.privateMB.median} | ${s.electron.cpuPct.avg} | ${s.native.memMB.median} / ${s.native.cpuPct.avg} | ${top} | ${flags} |\n`;
@@ -665,12 +754,24 @@ function printResult(r) {
     `startup: main window shown ${r.startup.mainWindowShownMs} ms; shutdown clean=${r.shutdown.clean} ${r.shutdown.durationMs} ms (quit event ${r.shutdown.quitEventMs} ms); leftovers=${r.shutdown.leftoverProcesses.join(',') || 'none'}`,
   );
   if (r.error) console.log(`ERROR: ${r.error}`);
-  if (r.gpuInfo) console.log(`gpu: ${JSON.stringify({ renderer: r.gpuInfo.glRenderer, devices: r.gpuInfo.devices, gl: r.gpuInfo.glImplementationParts })}`);
-  if (r.gpuModules) console.log(`gpu DLLs (image MB): ${r.gpuModules.slice(0, 10).map(m => `${m.module} ${m.imageMB}`).join(', ')}`);
+  if (r.gpuInfo)
+    console.log(
+      `gpu: ${JSON.stringify({ renderer: r.gpuInfo.glRenderer, devices: r.gpuInfo.devices, gl: r.gpuInfo.glImplementationParts })}`,
+    );
+  if (r.gpuModules)
+    console.log(
+      `gpu DLLs (image MB): ${r.gpuModules
+        .slice(0, 10)
+        .map(m => `${m.module} ${m.imageMB}`)
+        .join(', ')}`,
+    );
   if (r.memoryBreakdown && r.memoryBreakdown.gpu) {
     const g = r.memoryBreakdown.gpu;
-    console.log(`gpu memory-infra: resident ${g.residentMB} MB, private footprint ${g.privateFootprintMB} MB`);
-    for (const [k, v] of Object.entries(g.allocatorsMB).slice(0, 15)) console.log(`    ${String(v).padStart(7)} MB  ${k}`);
+    console.log(
+      `gpu memory-infra: resident ${g.residentMB} MB, private footprint ${g.privateFootprintMB} MB`,
+    );
+    for (const [k, v] of Object.entries(g.allocatorsMB).slice(0, 15))
+      console.log(`    ${String(v).padStart(7)} MB  ${k}`);
   }
   for (const s of r.segments) {
     const e = s.electron;
@@ -679,7 +780,9 @@ function printResult(r) {
       `--- ${s.scenario} (check ${s.scenarioCheck} ${s.scenarioCheckFraction}, foreground: ${s.foregroundOwners.join('/')}) Electron: ${e.memMB.median} MB ws / ${e.privateMB.median} MB private, CPU avg ${e.cpuPct.avg}% (p95 ${e.cpuPct.p95}%) | native OBS: ${o.memMB.median} MB, CPU ${o.cpuPct.avg}%`,
     );
     for (const p of s.byProcess.slice(0, 8))
-      console.log(`  ${String(p.memMB).padStart(7)} MB  ${String(p.cpuPctAvg).padStart(6)} %  ${p.label}`);
+      console.log(
+        `  ${String(p.memMB).padStart(7)} MB  ${String(p.cpuPctAvg).padStart(6)} %  ${p.label}`,
+      );
   }
 }
 

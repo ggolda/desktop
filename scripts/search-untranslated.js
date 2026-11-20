@@ -1,13 +1,12 @@
 /**
  * Run this script to find the strings that missed in localization dictionaries.
  */
-const searchExp = /\$t\(([\'\`\"])([ a-zA-Z\d\-_`@%;:,'’=&!~#\\\+\*\?\.\}\{\(\)\[\]\$\<\>/]+?)\1\)/gm;
+const searchExp =
+  /\$t\(([\'\`\"])([ a-zA-Z\d\-_`@%;:,'’=&!~#\\\+\*\?\.\}\{\(\)\[\]\$\<\>/]+?)\1\)/gm;
 const fs = require('fs');
 const recursive = require('recursive-readdir');
 
-
 (async function main() {
-
   const dictionary = {};
 
   // load dictionary
@@ -44,7 +43,6 @@ const recursive = require('recursive-readdir');
       missedStrings.push(str);
     });
 
-
     if (!missedStrings.length) return;
 
     console.log(`missed strings found in ${filePath}`);
@@ -56,12 +54,4 @@ const recursive = require('recursive-readdir');
 
     console.log(JSON.stringify(missedStringsMap, null, 4));
   });
-
-
-
 })();
-
-
-
-
-

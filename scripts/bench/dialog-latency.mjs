@@ -37,20 +37,35 @@ async function runMode(mode) {
   fs.mkdirSync(outDir, { recursive: true });
   fs.cpSync(fixture, appData, { recursive: true });
 
-  const env = { ...process.env, NODE_ENV: 'production', SLOBS_CACHE_DIR: appData, SLOBS_BENCH_OUT: outDir, SLOBS_BENCH_SCENARIO: 'S2' };
+  const env = {
+    ...process.env,
+    NODE_ENV: 'production',
+    SLOBS_CACHE_DIR: appData,
+    SLOBS_BENCH_OUT: outDir,
+    SLOBS_BENCH_SCENARIO: 'S2',
+  };
   if (mode === 'warm') env.SLOBS_WARM_CHILD = '1';
   else delete env.SLOBS_WARM_CHILD;
   const app = spawn(exe, [repo, '--skip-update', '--local-bundles'], {
     cwd: repo,
     env,
-    stdio: ['ignore', fs.openSync(path.join(runDir, 'stdout.log'), 'w'), fs.openSync(path.join(runDir, 'stderr.log'), 'w')],
+    stdio: [
+      'ignore',
+      fs.openSync(path.join(runDir, 'stdout.log'), 'w'),
+      fs.openSync(path.join(runDir, 'stderr.log'), 'w'),
+    ],
   });
   let exited = false;
   app.on('exit', () => (exited = true));
 
   const events = () => {
     try {
-      return fs.readFileSync(path.join(outDir, 'events.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
+      return fs
+        .readFileSync(path.join(outDir, 'events.jsonl'), 'utf8')
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .map(l => JSON.parse(l));
     } catch (e) {
       return [];
     }
@@ -83,7 +98,9 @@ async function runMode(mode) {
         const [timing] = (await waitCount('dialog-timing', n, 30_000)).slice(-1);
         const [closed] = (await waitCount('dialog-closed', n, 30_000)).slice(-1);
         results.push({ ...timing, closeMs: closed.ms, destroyed: closed.destroyed });
-        log(`${mode} ${d} #${r + 1}: visible ${timing.visibleMs} ms, title ${timing.titleMs} ms, painted ${timing.paintedMs} ms (created=${timing.created}, destroyed on close=${closed.destroyed})`);
+        log(
+          `${mode} ${d} #${r + 1}: visible ${timing.visibleMs} ms, title ${timing.titleMs} ms, painted ${timing.paintedMs} ms (created=${timing.created}, destroyed on close=${closed.destroyed})`,
+        );
         await sleep(3000);
       }
     }
@@ -116,10 +133,18 @@ for (const m of modes) {
   for (const d of dialogs) {
     const rs = all[m].filter(r => r.name === d);
     const rest = rs.slice(1);
-    const f = list => `${median(list.map(r => r.visibleMs))} / ${median(list.map(r => r.titleMs))} / ${median(list.map(r => r.paintedMs))}`;
-    console.log(`${m.padEnd(9)} ${d.padEnd(10)} all: ${f(rs)}   (repeat: ${f(rest)})   first open painted: ${rs[0]?.paintedMs}`);
+    const f = list =>
+      `${median(list.map(r => r.visibleMs))} / ${median(list.map(r => r.titleMs))} / ${median(list.map(r => r.paintedMs))}`;
+    console.log(
+      `${m.padEnd(9)} ${d.padEnd(10)} all: ${f(rs)}   (repeat: ${f(rest)})   first open painted: ${rs[0]?.paintedMs}`,
+    );
   }
 }
-const outFile = path.join(repo, '.bench', 'runs', `dialogs_${new Date().toISOString().slice(0, 10)}.json`);
+const outFile = path.join(
+  repo,
+  '.bench',
+  'runs',
+  `dialogs_${new Date().toISOString().slice(0, 10)}.json`,
+);
 fs.writeFileSync(outFile, JSON.stringify(all, null, 1));
 log(`raw: ${path.relative(repo, outFile)}`);

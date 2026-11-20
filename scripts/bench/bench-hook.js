@@ -93,7 +93,11 @@ function snapshot() {
   append(metricsFile, {
     browserPid: process.pid,
     // role of the focused app window; 'bench-focus' = our S1u window; null = another app has focus
-    focusedWindow: focused ? roleOf(focused.webContents) : focusWindow && focusWindow.isFocused() ? 'bench-focus' : null,
+    focusedWindow: focused
+      ? roleOf(focused.webContents)
+      : focusWindow && focusWindow.isFocused()
+        ? 'bench-focus'
+        : null,
     appMetrics: app.getAppMetrics().map(m => ({
       pid: m.pid,
       type: m.type,
@@ -154,7 +158,12 @@ function keepFocus() {
     if (!['S1', 'S2', 'S3', 'S5'].includes(currentScenario) || refocusTimer) return;
     refocusTimer = setTimeout(() => {
       refocusTimer = null;
-      if (!['S1', 'S2', 'S3', 'S5'].includes(currentScenario) || main.isDestroyed() || main.isFocused()) return;
+      if (
+        !['S1', 'S2', 'S3', 'S5'].includes(currentScenario) ||
+        main.isDestroyed() ||
+        main.isFocused()
+      )
+        return;
       main.minimize();
       setTimeout(() => {
         main.restore();
@@ -235,7 +244,16 @@ function countIpc(channel, from, key, bytes) {
   s.count++;
   s.bytes += bytes || 0;
 }
-const size = x => (typeof x === 'string' ? x.length : (() => { try { return JSON.stringify(x).length; } catch (e) { return 0; } })());
+const size = x =>
+  typeof x === 'string'
+    ? x.length
+    : (() => {
+        try {
+          return JSON.stringify(x).length;
+        } catch (e) {
+          return 0;
+        }
+      })();
 ipcMain.on('vuex-mutation', (e, str) => {
   let list = [];
   try {
@@ -249,10 +267,22 @@ for (const ch of ['services-request', 'services-request-async']) {
     countIpc(ch, senderRole(e), `${p.resource || '?'}.${req && req.method}`, size(req));
   });
 }
-ipcMain.on('services-response', (e, res) => countIpc('services-response', senderRole(e), (res && res.result && res.result._type) || 'value', size(res)));
+ipcMain.on('services-response', (e, res) =>
+  countIpc(
+    'services-response',
+    senderRole(e),
+    (res && res.result && res.result._type) || 'value',
+    size(res),
+  ),
+);
 ipcMain.on('services-message', (e, msg) => {
   const r = (msg && msg.result) || {};
-  countIpc('services-message', senderRole(e), `${r._type || '?'}:${r.emitter || ''}:${r.resourceId || ''}`, size(msg));
+  countIpc(
+    'services-message',
+    senderRole(e),
+    `${r._type || '?'}:${r.emitter || ''}:${r.resourceId || ''}`,
+    size(msg),
+  );
 });
 
 // ---- idle trace: timeline of all processes + JS CPU profiles ----
@@ -300,11 +330,22 @@ async function traceIdle(sec, roles, withMemory = false) {
   await contentTracing.stopRecording(tracePath);
   for (const p of profiles) {
     const { profile } = await p.dbg.sendCommand('Profiler.stop');
-    fs.writeFileSync(path.join(outDir, `profile-${p.role}-${stamp}.cpuprofile`), JSON.stringify(profile));
+    fs.writeFileSync(
+      path.join(outDir, `profile-${p.role}-${stamp}.cpuprofile`),
+      JSON.stringify(profile),
+    );
     p.dbg.detach();
   }
-  fs.writeFileSync(path.join(outDir, `ipc-${stamp}.json`), JSON.stringify({ seconds: sec, stats: ipc }, null, 1));
-  emit('trace-done', { stamp, sec, tracePath, roles: profiles.map(p => ({ role: p.role, pid: p.pid })) });
+  fs.writeFileSync(
+    path.join(outDir, `ipc-${stamp}.json`),
+    JSON.stringify({ seconds: sec, stats: ipc }, null, 1),
+  );
+  emit('trace-done', {
+    stamp,
+    sec,
+    tracePath,
+    roles: profiles.map(p => ({ role: p.role, pid: p.pid })),
+  });
 }
 
 // ---- composited layers of a window (scripts/bench/layers.mjs) ----
@@ -321,20 +362,27 @@ async function dumpLayers(role) {
         resolve(params.layers);
       }
     });
-    dbg.sendCommand('DOM.enable').then(() => dbg.sendCommand('LayerTree.enable')).catch(reject);
+    dbg
+      .sendCommand('DOM.enable')
+      .then(() => dbg.sendCommand('LayerTree.enable'))
+      .catch(reject);
   });
   const out = [];
   for (const l of layers) {
     let reasons = [];
     try {
-      reasons = (await dbg.sendCommand('LayerTree.compositingReasons', { layerId: l.layerId })).compositingReasonIds || [];
+      reasons =
+        (await dbg.sendCommand('LayerTree.compositingReasons', { layerId: l.layerId }))
+          .compositingReasonIds || [];
     } catch (e) {}
     let node = '';
     if (l.backendNodeId) {
       try {
-        const n = (await dbg.sendCommand('DOM.describeNode', { backendNodeId: l.backendNodeId })).node;
+        const n = (await dbg.sendCommand('DOM.describeNode', { backendNodeId: l.backendNodeId }))
+          .node;
         const attrs = {};
-        for (let i = 0; i < (n.attributes || []).length; i += 2) attrs[n.attributes[i]] = n.attributes[i + 1];
+        for (let i = 0; i < (n.attributes || []).length; i += 2)
+          attrs[n.attributes[i]] = n.attributes[i + 1];
         node = `${n.localName || n.nodeName}${attrs.id ? '#' + attrs.id : ''}${attrs.class ? '.' + attrs.class.trim().split(/\s+/).slice(0, 3).join('.') : ''}`;
       } catch (e) {}
     }
@@ -370,7 +418,9 @@ async function measureDialog(name) {
   await worker.webContents.executeJavaScript(`window.servicesManager.${d.open}; true`);
   const out = { name, warm: !!process.env.SLOBS_WARM_CHILD, created: !before };
   while (Date.now() - t0 < 20000) {
-    const c = findWindow('child') || BrowserWindow.getAllWindows().find(w => !w.isDestroyed() && w.webContents.getURL() === '');
+    const c =
+      findWindow('child') ||
+      BrowserWindow.getAllWindows().find(w => !w.isDestroyed() && w.webContents.getURL() === '');
     if (c && out.visibleMs == null && c.isVisible()) out.visibleMs = Date.now() - t0;
     if (c && c.getTitle() === d.title) {
       out.titleMs = Date.now() - t0;
@@ -429,7 +479,9 @@ app.on('ready', () => {
     if (main && main.isVisible()) {
       clearInterval(readyPoll);
       emit('main-window-shown');
-      applyScenario(scenario).catch(e => emit('scenario-error', { message: String(e && e.message) }));
+      applyScenario(scenario).catch(e =>
+        emit('scenario-error', { message: String(e && e.message) }),
+      );
     }
   }, 500);
 
@@ -452,7 +504,9 @@ app.on('ready', () => {
         .catch(e => emit('scenario-error', { message: String(e && e.message) }));
     }
     if (cmd.startsWith('record ')) {
-      setRecording(cmd.endsWith('on')).catch(e => emit('scenario-error', { message: String(e && e.message) }));
+      setRecording(cmd.endsWith('on')).catch(e =>
+        emit('scenario-error', { message: String(e && e.message) }),
+      );
     }
     if (cmd.startsWith('perfmode ')) {
       // hides the mixer volume meters via the real setting (customization performanceMode)

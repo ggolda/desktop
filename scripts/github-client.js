@@ -1,12 +1,11 @@
-const { App } = require("@octokit/app");
-const { request } = require("@octokit/request");
+const { App } = require('@octokit/app');
+const { request } = require('@octokit/request');
 
 /**
  * A wrapper for the Github API
  */
 module.exports.GithubClient = class GithubClient {
-
-  constructor (appId, privateKey, owner, repo) {
+  constructor(appId, privateKey, owner, repo) {
     this.appId = appId;
     this.owner = owner;
     this.repo = repo;
@@ -26,7 +25,7 @@ module.exports.GithubClient = class GithubClient {
       headers: {
         authorization: `Bearer ${jwt}`,
         accept: 'application/vnd.github.machine-man-preview+json',
-      }
+      },
     });
     const installationId = data.id;
     this.installationAccessToken = await app.getInstallationAccessToken({ installationId });
@@ -78,4 +77,3 @@ module.exports.GithubClient = class GithubClient {
     });
   }
 };
-

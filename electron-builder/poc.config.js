@@ -1,6 +1,6 @@
 /**
  * Performance-rework PoC build for internal testing (docs/rework).
- *   yarn package:poc   →  dist/Streamlabs Desktop PoC Setup <version>.exe (unsigned)
+ *   npm run package:poc   →  dist/Streamlabs Desktop PoC Setup <version>.exe (unsigned)
  *
  * - separate appId / product name: installs side by side with the official app
  * - force-local-bundles: the bundle updater uses the PoC bundles, never the release CDN bundles

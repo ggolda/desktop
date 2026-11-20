@@ -1,0 +1,236 @@
+/*
+ * Night theme, ported from legacy/app/themes.g.less (.night-theme) and legacy/app/styles/colors.less.
+ * shadcn variables are HSL triples (consumed by unocss-preset-shadcn as hsl(var(--x))).
+ * The app is dark-only for now; <html class="dark"> is set in each window's index.html.
+ * `html.dark` out-specifies the preset's :root / .dark defaults regardless of CSS order.
+ */
+html.dark {
+  /* legacy palette: dark-1 #050D12, dark-2 #09161D, dark-3 #17242D, dark-4 #2B383F, dark-5 #4F5E65 */
+  --background: 204.5 32.4% 13.3%; /* --background: @dark-3 */
+  --foreground: 0 0% 100%; /* --title: @light-1 */
+  --card: 201 18.9% 20.8%; /* --card: @dark-4 */
+  --card-foreground: 202.5 16.7% 90.6%; /* @light-3 */
+  --popover: 201 18.9% 20.8%; /* --dropdown-bg: @dark-4 */
+  --popover-foreground: 0 0% 100%;
+  --primary: 162.1 85.4% 73.1%; /* --teal: @teal-dark #80F5D2 */
+  --primary-foreground: 201 52.6% 7.5%; /* --action-button-text: @dark-2 */
+  --secondary: 199.1 12.2% 35.3%; /* --button: @dark-5 */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 201 52.6% 7.5%; /* --section: @dark-2 */
+  --muted-foreground: 197.1 5.6% 75.5%; /* --paragraph: @light-4 */
+  --accent: 201 18.9% 20.8%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 7.2 92.9% 61.2%; /* --red: @red-dark */
+  --destructive-foreground: 0 0% 100%;
+  --border: 201 18.9% 20.8%; /* --border: @dark-4 */
+  --input: 201 18.9% 20.8%;
+  --ring: 162.1 85.4% 73.1%;
+
+  --sl-teal: 166.4 59.8% 47.8%; /* brand teal #31c3a2 */
+  --sl-red: 7.2 92.9% 61.2%;
+  --sl-purple: 273.6 100% 74.1%;
+
+  --titlebar: 203.1 56.5% 4.5%; /* @dark-1 */
+
+  /* legacy night theme variables used by the editor layout (plain colors, names as in themes.g.less) */
+  --section: #09161d; /* @dark-2: panels, footer */
+  --section-alt: #2b383f; /* @dark-4: selected row, solid inputs */
+  --section-wrapper: #050d12; /* @dark-1: window background, side nav */
+  --title: #ffffff; /* @light-1 */
+  --paragraph: #bdc2c4; /* @light-4 */
+  --icon: #91979a; /* @light-5 */
+  --nav-icon-inactive: #91979a;
+  --icon-active: #80f5d2;
+  --warning: #f85640; /* @red-dark */
+  --info: #ffcd47;
+  --button: #4f5e65; /* @dark-5 */
+  --button-hover: #697980; /* lighten(@dark-5, 8%) */
+  /* more legacy night theme variables (themes.g.less) */
+  --teal: #80f5d2;
+  --teal-hover: #6df3cb; /* darken(@teal-dark, 4%) */
+  --nav-active: #80f5d2;
+  --border: #2b383f; /* @dark-4 */
+  --solid-input: #2b383f;
+  --titlebar-bg: #050d12; /* @dark-1 */
+  --background-solid: #17242d; /* @dark-3 */
+  --action-button-text: #09161d;
+  --red: #f85640;
+  color-scheme: dark;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--background-solid);
+  color: var(--paragraph);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5715; /* antd base, as legacy (22px at 14px) */
+  -webkit-font-smoothing: auto;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* legacy .icon-button (styles/buttons.less) */
+.icon-button {
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+  color: var(--icon);
+  transition: color 0.2s;
+}
+.icon-button:first-child {
+  margin-left: 0;
+}
+.icon-button:hover {
+  color: var(--title);
+}
+.icon-button--lg {
+  font-size: 15px;
+}
+
+/* legacy .circle-button / .record-button (REC, replay buffer) */
+.circle-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 100%;
+  background: var(--button);
+  color: var(--paragraph);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+}
+.circle-button:hover {
+  background-color: var(--button-hover);
+}
+.circle-button:focus {
+  outline: none;
+}
+
+/* legacy .button--action (Go Live) */
+.button-action {
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--teal);
+  border-radius: 4px;
+  background-color: var(--teal);
+  color: var(--action-button-text);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 30px;
+  cursor: pointer;
+}
+.button-action:hover {
+  background-color: var(--teal-hover);
+}
+.button-action:focus {
+  outline: none;
+}
+.button-action:disabled {
+  opacity: 1;
+}
+
+/* antd-like small switch used by the Dual Output / Studio Mode toggles (legacy DualOutputToggle) */
+.sl-switch {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 28px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 100px;
+  background: var(--button);
+  cursor: pointer;
+  vertical-align: middle;
+}
+.sl-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--section);
+}
+.sl-switch:focus {
+  outline: none;
+}
+
+/* Mixer fader: legacy antd slider (4px rail, teal track, 14px light-grey handle). */
+.sl-slider {
+  --p: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.sl-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  /* rail and fill are inset by half the handle so the handle CENTER spans the rail, like antd */
+  background:
+    linear-gradient(var(--teal), var(--teal)) 7px 0 / calc((100% - 14px) * var(--p) / 100) 100%
+      no-repeat,
+    linear-gradient(var(--button), var(--button)) 7px 0 / calc(100% - 14px) 100% no-repeat;
+}
+.sl-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 2px solid var(--icon);
+  border-radius: 50%;
+  background: var(--icon);
+}
+.sl-slider:hover::-webkit-slider-thumb {
+  border-color: var(--title);
+}
+.sl-slider:focus {
+  outline: none;
+}
+.sl-slider:focus-visible::-webkit-slider-thumb {
+  border-color: var(--teal);
+}
+
+/* Thin dark scrollbars (legacy look). */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--section-alt);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--button);
+}

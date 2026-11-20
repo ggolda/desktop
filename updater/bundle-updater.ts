@@ -3,28 +3,81 @@ import * as electron from 'electron';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as stream from 'stream';
-import * as http from 'http';
 import * as crypto from 'crypto';
 import AbortController from 'abort-controller';
 
-type TBundleName = 'renderer.js' | 'vendors~renderer.js';
-
 interface IManifest {
-  'renderer.js': string;
-  'vendors~renderer.js': string;
+  [logicalName: string]: any; // logicalName -> fileName, except `checksums`
   checksums?: {
-    [bundle: string]: string;
+    [fileName: string]: string;
   };
 }
 
 type TExecutor = () => [Promise<unknown>, () => void];
 
-const BUNDLE_NAMES = ['renderer.js', 'vendors~renderer.js'] as const;
+/** Result handed to the main process. */
+interface IBundleSet {
+  /** True when the set shipped in the app is used (no hotfix active). */
+  useLocal: boolean;
+  /** Directory that holds EVERY file of `manifest` (app bundles dir or the completed cache dir). */
+  setDir: string;
+  manifest: IManifest;
+}
 
-module.exports = async (basePath: string) => {
-  const cdnBase = `https://slobs-cdn.streamlabs.com/${process.env.SLOBS_VERSION}${
-    process.platform === 'darwin' ? '-mac' : ''
-  }/bundles/`;
+const SCHEME = 'slbundle';
+const CSP =
+  "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+  "img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self'; " +
+  "worker-src 'self' blob:";
+
+const MIME: { [ext: string]: string } = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.map': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.wasm': 'application/wasm',
+};
+
+/** A set is only usable if it can start the app: core, preload and the main window. */
+function isUsableManifest(m: any): m is IManifest {
+  return (
+    !!m &&
+    typeof m['core.js'] === 'string' &&
+    typeof m['preload.js'] === 'string' &&
+    typeof m['main.html'] === 'string'
+  );
+}
+
+/** File names of a manifest that make up the set (no checksums, no source maps). */
+function setFiles(manifest: IManifest): string[] {
+  const out: string[] = [];
+  Object.keys(manifest).forEach(key => {
+    const value = manifest[key];
+    if (key === 'checksums' || typeof value !== 'string' || /\.map$/.test(value)) return;
+    if (out.indexOf(value) === -1) out.push(value);
+  });
+  return out;
+}
+
+module.exports = async (basePath: string): Promise<IBundleSet> => {
+  // SLOBS_BUNDLE_CDN only overrides the CDN folder for tests (local HTTP server).
+  const cdnBase = process.env.SLOBS_BUNDLE_CDN
+    ? process.env.SLOBS_BUNDLE_CDN.replace(/\/?$/, '/')
+    : `https://slobs-cdn.streamlabs.com/${process.env.SLOBS_VERSION}${
+        process.platform === 'darwin' ? '-mac' : ''
+      }/bundles/`;
   const localBase = path.join(basePath, 'bundles');
   const bundlesBaseDirectory = path.join(electron.app.getPath('userData'), 'bundles');
   const bundleDirectory = path.join(bundlesBaseDirectory, process.env.SLOBS_VERSION!);
@@ -40,7 +93,8 @@ module.exports = async (basePath: string) => {
       resizable: false,
       show: false,
       alwaysOnTop: true,
-      webPreferences: { nodeIntegration: true },
+      // Plain static page (updater/index.html): no node access needed.
+      webPreferences: { sandbox: true, contextIsolation: true },
     });
 
     updaterWindow.on('ready-to-show', () => {
@@ -232,7 +286,7 @@ module.exports = async (basePath: string) => {
       const fromDisk = fs.readFileSync(manifestPath);
       const parsed = JSON.parse(fromDisk.toString());
 
-      if (parsed['renderer.js'] && parsed['vendors~renderer.js']) {
+      if (isUsableManifest(parsed)) {
         console.log('Found cached manifest:', parsed);
         return parsed;
       } else {
@@ -243,17 +297,27 @@ module.exports = async (basePath: string) => {
     }
   }
 
+  /** Whether the copy of `file` shipped in the app is exactly the one `manifest` describes. */
+  function localMatches(file: string, manifest: IManifest, localManifest: IManifest): boolean {
+    if (!fs.existsSync(path.join(localBase, file))) return false;
+    const wanted = manifest.checksums && manifest.checksums[file];
+    // Without checksums we can only trust the (content-hashed) name, like before.
+    if (!wanted) return true;
+    // Unhashed names (e.g. main.html) can differ in content: compare against the local manifest.
+    return !!localManifest.checksums && localManifest.checksums[file] === wanted;
+  }
+
   async function getLocalOrCachedBundleFilePath(
     bundle: string,
     manifest: IManifest,
+    localManifest: IManifest,
   ): Promise<string> {
     console.log(`Looking for bundle: ${bundle}`);
 
     // Check for bundle in this app package
-    const localPath = path.join(basePath, 'bundles', bundle);
-    if (fs.existsSync(localPath)) {
+    if (localMatches(bundle, manifest, localManifest)) {
       console.log(`Found local bundle ${bundle}`);
-      return localPath;
+      return path.join(localBase, bundle);
     }
 
     // Fall back to checking the download directory
@@ -269,10 +333,16 @@ module.exports = async (basePath: string) => {
     return Promise.reject('Did not find local or cached bundle');
   }
 
-  async function getBundleFilePath(bundle: string, manifest: IManifest): Promise<string> {
-    const localOrCached = await getLocalOrCachedBundleFilePath(bundle, manifest).catch(
-      () => undefined,
-    );
+  async function getBundleFilePath(
+    bundle: string,
+    manifest: IManifest,
+    localManifest: IManifest,
+  ): Promise<string> {
+    const localOrCached = await getLocalOrCachedBundleFilePath(
+      bundle,
+      manifest,
+      localManifest,
+    ).catch(() => undefined);
     if (localOrCached) return localOrCached;
 
     // Check the server
@@ -287,6 +357,53 @@ module.exports = async (basePath: string) => {
     }
 
     return downloadPath;
+  }
+
+  /**
+   * Makes the cache directory hold the COMPLETE set: files that are used from the app's own
+   * bundles are copied next to the downloaded ones, so the core process and the preload can be
+   * loaded from one folder by plain path.
+   */
+  function completeSetDirectory(files: string[], paths: { [file: string]: string }) {
+    ensureBundlesDirectory();
+    files.forEach(file => {
+      const dst = path.join(bundleDirectory, file);
+      const src = paths[file];
+      if (src === dst) return;
+      const srcStat = fs.statSync(src);
+      try {
+        // Already completed by an earlier start: same size and mtime means same copy.
+        const dstStat = fs.statSync(dst);
+        if (dstStat.size === srcStat.size && Math.floor(dstStat.mtimeMs) === Math.floor(srcStat.mtimeMs)) {
+          return;
+        }
+      } catch (e: unknown) {
+        // destination missing: copy below
+      }
+      fs.copyFileSync(src, dst);
+      fs.utimesSync(dst, srcStat.atime, srcStat.mtime);
+    });
+  }
+
+  /** Resolves every file of the set; with `download` missing files are fetched. */
+  async function resolveSet(
+    manifest: IManifest,
+    localManifest: IManifest,
+    download: boolean,
+  ): Promise<void> {
+    const files = setFiles(manifest);
+    const paths: { [file: string]: string } = {};
+    await Promise.all(
+      files.map(file =>
+        (download
+          ? getBundleFilePath(file, manifest, localManifest)
+          : getLocalOrCachedBundleFilePath(file, manifest, localManifest)
+        ).then(p => {
+          paths[file] = p;
+        }),
+      ),
+    );
+    completeSetDirectory(files, paths);
   }
 
   let useLocalBundles = false;
@@ -304,7 +421,9 @@ module.exports = async (basePath: string) => {
     useLocalBundles = true;
   }
 
-  const localManifest: IManifest = require(path.join(`${basePath}/bundles/manifest.json`));
+  const localManifest: IManifest = JSON.parse(
+    fs.readFileSync(path.join(localBase, 'manifest.json'), 'utf8'),
+  );
 
   console.log('Local bundle info:', localManifest);
 
@@ -318,36 +437,23 @@ module.exports = async (basePath: string) => {
         : 'manifest.json';
       const response = await fetch(`${cdnBase}${remoteManifestName}`);
 
-      if (response.status / 100 >= 4) {
+      if (response.status >= 400) {
         console.log(`Bundle manifest not available, got status: ${response.status}`);
       } else {
         const parsed = await response.json();
         console.log('Latest bundle info:', parsed);
 
-        serverManifest = parsed;
+        serverManifest = isUsableManifest(parsed) ? parsed : undefined;
       }
     } catch (e: unknown) {
       console.log('Bundle manifest fetch error', e);
     }
   }
 
-  const bundlePathsMap: { [bundle: string]: string } = {};
-
-  /**
-   * Checks if we found every bundle
-   * @returns Whether we found every bundle
-   */
-  function bundlesFound() {
-    return BUNDLE_NAMES.every(b => bundlePathsMap[b]);
-  }
+  // The manifest of the active hotfix set (server or cached); undefined means "local".
+  let activeManifest: IManifest | undefined;
 
   if (!useLocalBundles && serverManifest) {
-    const promises = BUNDLE_NAMES.map(bundleName => {
-      return getBundleFilePath(serverManifest![bundleName], serverManifest!).then(bundlePath => {
-        bundlePathsMap[bundleName] = bundlePath;
-      });
-    });
-
     let timeout: NodeJS.Timeout | null = null;
 
     try {
@@ -358,10 +464,11 @@ module.exports = async (basePath: string) => {
         spawnUpdaterWindow();
       }, 10 * 1000);
 
-      await Promise.all(promises);
+      await resolveSet(serverManifest, localManifest, true);
 
       // Everything was successful, so cache the manifest for next time
       cacheManifest(serverManifest);
+      activeManifest = serverManifest;
 
       clearTimeout(timeout);
       closeUpdaterWindow();
@@ -373,18 +480,13 @@ module.exports = async (basePath: string) => {
   }
 
   // Fall back to checking for cached bundles
-  if (!useLocalBundles && !bundlesFound()) {
+  if (!useLocalBundles && !activeManifest) {
     const cached = loadCachedManifest();
     if (cached) {
-      const promises = BUNDLE_NAMES.map(bundleName => {
-        // We don't try to download when looking for these bundles
-        return getLocalOrCachedBundleFilePath(cached[bundleName], cached).then(bundlePath => {
-          bundlePathsMap[bundleName] = bundlePath;
-        });
-      });
-
       try {
-        await Promise.all(promises);
+        // We don't try to download when looking for these bundles
+        await resolveSet(cached, localManifest, false);
+        activeManifest = cached;
       } catch (e: unknown) {
         console.log('Failed to load cached bundles', e);
       }
@@ -392,71 +494,58 @@ module.exports = async (basePath: string) => {
   }
 
   // If everything failed, use local bundles
-  if (!bundlesFound()) useLocalBundles = true;
+  if (!activeManifest) useLocalBundles = true;
 
-  // Used for sending accurate stack traces to sentry
-  electron.ipcMain.on('getBundleNames', (e: Electron.Event, bundles: TBundleName[]) => {
+  const manifest: IManifest = activeManifest || localManifest;
+  const setDir = activeManifest ? bundleDirectory : localBase;
+
+  // Used for sending accurate stack traces to sentry: logical name -> file name
+  electron.ipcMain.on('getBundleNames', (e: Electron.Event) => {
     const bundleNames: { [bundle: string]: string } = {};
-
-    bundles.forEach(bundle => {
-      if (!useLocalBundles && serverManifest && serverManifest[bundle]) {
-        bundleNames[bundle] = serverManifest[bundle];
-      } else {
-        bundleNames[bundle] = localManifest[bundle];
-      }
+    Object.keys(manifest).forEach(key => {
+      if (key !== 'checksums') bundleNames[key] = manifest[key];
     });
 
     // @ts-ignore Electron types are wrong here
     e.returnValue = bundleNames;
   });
 
-  electron.session.defaultSession?.protocol.registerFileProtocol('slbundle', (request, cb) => {
-    const url = new URL(request.url);
-    const bundleName = url.pathname.replace('/', '') as TBundleName;
+  // slbundle://app/<logical name or file name>, served from the active set's directory.
+  const servable: { [name: string]: string } = {};
+  Object.keys(manifest).forEach(key => {
+    if (key !== 'checksums' && typeof manifest[key] === 'string') {
+      servable[key] = manifest[key];
+      servable[manifest[key]] = manifest[key];
+    }
+  });
 
-    if (!useLocalBundles && bundlePathsMap[bundleName]) {
-      cb({ path: bundlePathsMap[bundleName] });
-      return;
+  electron.session.defaultSession.protocol.handle(SCHEME, async request => {
+    const url = new URL(request.url);
+    let name = '';
+    try {
+      name = decodeURIComponent(url.pathname.replace(/^\//, ''));
+    } catch (e: unknown) {
+      // malformed escape: treated as unknown below
     }
 
     // Requests for files not in the manifest (e.g. source maps fetched by DevTools)
-    // must fail the request rather than throw, or the uncaught error takes down
-    // the main process.
-    const localFile = localManifest[bundleName];
-    if (!localFile) {
-      cb({ error: -6 }); // net::ERR_FILE_NOT_FOUND
-      return;
+    // fail with 404 rather than throw.
+    const file = Object.prototype.hasOwnProperty.call(servable, name) ? servable[name] : undefined;
+    if (!file) return new Response('Not found', { status: 404 });
+
+    try {
+      const data = await fs.promises.readFile(path.join(setDir, file));
+      const ext = path.extname(file).toLowerCase();
+      const headers: { [h: string]: string } = {
+        'Content-Type': MIME[ext] || 'application/octet-stream',
+      };
+      if (ext === '.html') headers['Content-Security-Policy'] = CSP;
+      return new Response(data as unknown as BodyInit, { status: 200, headers });
+    } catch (e: unknown) {
+      console.log(`Error serving ${name}`, e);
+      return new Response('Not found', { status: 404 });
     }
-
-    console.log(`Using local bundle for ${bundleName}`);
-    cb({ path: path.join(localBase, localFile) });
   });
-
-  // Use a local web server to serve source maps in development.
-  // This is needed because chromium no longer uses the redirect
-  // URL when looking for source maps.
-  if (!['production', 'test'].includes(process.env.NODE_ENV ?? '')) {
-    const handler = require('serve-handler');
-
-    const server = http.createServer((request, response) => {
-      handler(request, response, {
-        public: path.resolve(__dirname, '..', '..', 'bundles'),
-        headers: [
-          {
-            source: '**',
-            headers: [
-              {
-                key: 'Cache-Control',
-                value: 'no-cache, no-store, must-revalidate',
-              },
-            ],
-          },
-        ],
-      });
-    });
-
-    server.listen(9000);
-  }
 
   electron.ipcMain.on('startupError', (e, msg) => {
     console.log('Received startup error from worker window', msg);
@@ -503,4 +592,22 @@ module.exports = async (basePath: string) => {
       'Streamlabs Desktop failed to start. Please try launching Streamlabs Desktop again. If this issue persists, please visit support.streamlabs.com for help.',
     );
   });
+
+  return { useLocal: useLocalBundles, setDir, manifest };
+};
+
+/** Must run before app 'ready': makes slbundle:// a standard, secure scheme (ES modules). */
+module.exports.registerSchemes = () => {
+  electron.protocol.registerSchemesAsPrivileged([
+    {
+      scheme: SCHEME,
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchAPI: true,
+        corsEnabled: true,
+        codeCache: true,
+      },
+    },
+  ]);
 };

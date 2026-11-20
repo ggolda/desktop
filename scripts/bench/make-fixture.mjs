@@ -22,11 +22,22 @@ console.log(`Fixture dir: ${dir}\nLog in, set up the scene, then quit the app.`)
 const app = spawn(
   path.join(repo, 'node_modules/electron/dist/electron.exe'),
   [repo, '--skip-update', '--local-bundles'],
-  { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_ENV: 'production', SLOBS_CACHE_DIR: dir } },
+  {
+    cwd: repo,
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'production', SLOBS_CACHE_DIR: dir },
+  },
 );
 app.on('exit', code => {
   // drop caches/logs that only add noise or size to every copy
-  for (const sub of ['Cache', 'Code Cache', 'GPUCache', 'DawnGraphiteCache', 'DawnWebGPUCache', 'Crashpad']) {
+  for (const sub of [
+    'Cache',
+    'Code Cache',
+    'GPUCache',
+    'DawnGraphiteCache',
+    'DawnWebGPUCache',
+    'Crashpad',
+  ]) {
     fs.rmSync(path.join(dir, 'slobs-client', sub), { recursive: true, force: true });
   }
   console.log(`App exited (${code}). Fixture saved.`);
