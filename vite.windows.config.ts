@@ -45,6 +45,41 @@ function flatHtml(): Plugin {
   };
 }
 
+/** Fonts every dialog window needs for its first frame (see src/ui/dialog/ready.ts): latin Roboto, icons. */
+const DIALOG_FONTS =
+  /^(roboto-(400|500|700)-latin|icomoon|fa-solid-900|fa-regular-400)\.[\w-]+\.(woff2?)$/;
+
+/**
+ * `<link rel="preload" as="font">` for the dialog pages, with the hashed file names of the build, so the
+ * fonts download in parallel with the scripts instead of after the first layout (no font swap, no late
+ * icons). Hrefs start with `../` like Vite's own, which `flatHtml` rewrites.
+ */
+function preloadDialogFonts(): Plugin {
+  return {
+    name: 'slobs:preload-dialog-fonts',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(_html, ctx) {
+        if (!ctx.bundle || !/dialog-/.test(ctx.path)) return;
+        return Object.values(ctx.bundle)
+          .filter(o => o.type === 'asset' && DIALOG_FONTS.test(o.fileName))
+          .map(o => ({
+            tag: 'link',
+            attrs: {
+              rel: 'preload',
+              as: 'font',
+              type: o.fileName.endsWith('.woff2') ? 'font/woff2' : 'font/woff',
+              href: `../${o.fileName}`,
+              crossorigin: '',
+            },
+            injectTo: 'head-prepend' as const,
+          }));
+      },
+    },
+  };
+}
+
 export default defineConfig({
   root: path.join(root, 'src/windows'),
   base: './',
@@ -64,6 +99,7 @@ export default defineConfig({
       deep: true,
       extensions: ['vue'],
     }),
+    preloadDialogFonts(),
     flatHtml(),
     slobsManifest(),
   ],

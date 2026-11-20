@@ -36,6 +36,9 @@ const bridge: RebornBridge = {
       return () => void ipcRenderer.removeListener('window:maximized', handler);
     },
   },
+  dialog: {
+    ready: () => ipcRenderer.send('dialog:ready'),
+  },
   menu: {
     popup: items => ipcRenderer.invoke('menu:popup', items) as Promise<string | null>,
   },

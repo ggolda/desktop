@@ -34,6 +34,9 @@ interface Rec {
   scheduled: boolean;
   chain: Promise<void>;
   hideTimer: ReturnType<typeof setTimeout> | null;
+  /** `options.settleMs`: the display is parked outside the window until this timer fires. */
+  settleTimer: ReturnType<typeof setTimeout> | null;
+  parked: boolean;
   dead: boolean;
 }
 
@@ -104,6 +107,18 @@ export function createDisplays(ctx: Ctx, mainRpc: MainRpc): DisplayApi {
     });
     rec.created = true;
     rec.applied = null;
+    const settle = rec.options.settleMs ?? 0;
+    if (settle > 0) {
+      // A new native display is black until its backend draws its first frame. Park it outside the
+      // parent window (clipped, invisible, still drawing) and move it in when that frame has surely
+      // been drawn; until then the page shows its placeholder colour. Only during the first `settle` ms.
+      rec.parked = true;
+      rec.settleTimer = setTimeout(() => {
+        rec.settleTimer = null;
+        rec.parked = false;
+        if (!rec.dead) schedule(rec);
+      }, settle);
+    }
   }
 
   async function destroyNative(rec: Rec) {
@@ -150,7 +165,8 @@ export function createDisplays(ctx: Ctx, mainRpc: MainRpc): DisplayApi {
         await createNative(rec);
         if (rec.dead) return;
       }
-      const next = toDevice(v.rect, v.dpr);
+      const placed = toDevice(v.rect, v.dpr);
+      const next = rec.parked ? { ...placed, x: -(placed.width + 64) } : placed;
       const prev = rec.applied;
       if (
         !prev ||
@@ -186,6 +202,8 @@ export function createDisplays(ctx: Ctx, mainRpc: MainRpc): DisplayApi {
     readyWaiters.delete(rec);
     if (rec.hideTimer) clearTimeout(rec.hideTimer);
     rec.hideTimer = null;
+    if (rec.settleTimer) clearTimeout(rec.settleTimer);
+    rec.settleTimer = null;
     recs.delete(rec.id);
     await rec.chain.catch(() => undefined);
     await destroyNative(rec);
@@ -216,6 +234,8 @@ export function createDisplays(ctx: Ctx, mainRpc: MainRpc): DisplayApi {
         scheduled: false,
         chain: Promise.resolve(),
         hideTimer: null,
+        settleTimer: null,
+        parked: false,
         dead: false,
       };
       recs.set(id, rec);

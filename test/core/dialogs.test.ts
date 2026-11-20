@@ -16,7 +16,7 @@ async function ready() {
   });
   let nextWindow = 7;
   h.rpcResults['dialogWindow.open'] = () => ({ windowId: nextWindow++ });
-  h.rpcResults['dialogWindow.replace'] = () => undefined;
+  h.rpcResults['dialogWindow.replace'] = () => ({ windowId: nextWindow++ }); // the swap makes a NEW window
   h.rpcResults['dialogWindow.close'] = () => undefined;
   h.rpcResults['dialog.showError'] = () => undefined;
   await start(h);
@@ -61,7 +61,7 @@ describe('dialog registry and windows', () => {
       params: {},
       title: 'Name Scene',
     });
-    expect(ref2.windowId).toBe(7);
+    expect(ref2.windowId).toBe(8);
     expect(calls(h, 'dialogWindow.open')).toHaveLength(1);
     expect(calls(h, 'dialogWindow.replace')).toHaveLength(1);
     expect(calls(h, 'dialogWindow.replace')[0].args[0]).toBe(7);
@@ -76,7 +76,9 @@ describe('dialog registry and windows', () => {
     expect(calls(h, 'dialogWindow.replace')[1].args[1]).toMatchObject({ position: 'keep' });
 
     // main reports the window gone: registry is clean
-    h.core.services.dialogs.windowClosed(7);
+    h.core.services.dialogs.windowClosed(7); // the swapped-out window: nothing to clean up
+    expect(h.core.services.dialogs.count()).toBe(1);
+    h.core.services.dialogs.windowClosed(9);
     expect(h.core.services.dialogs.count()).toBe(0);
     // opening again creates a new window
     await client.call.dialogs.open({ kind: 'name-scene', params: {}, title: 'Name Scene' });

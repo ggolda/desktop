@@ -93,6 +93,7 @@ window.reborn = {
     isMaximized: () => Promise.resolve(false),
     onMaximizedChange: () => () => {},
   },
+  dialog: { ready() {} },
   menu: { popup: () => Promise.resolve(null) },
 };
 function mount(k: DialogKind, dialogId: string) {

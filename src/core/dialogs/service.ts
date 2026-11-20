@@ -225,15 +225,17 @@ export function createDialogs(ctx: Ctx, svc: () => Services, mainRpc: MainRpc): 
       if (old) {
         try {
           // legacy: replaced in place, re-centered only when the kind changes
-          await mainRpc.call('dialogWindow.replace', old.windowId, {
-            ...spec,
-            position: old.kind === req.kind ? 'keep' : 'main',
-          });
-          windowId = old.windowId;
+          // (main creates the next window hidden and swaps when its page is ready)
+          windowId = (
+            await mainRpc.call('dialogWindow.replace', old.windowId, {
+              ...spec,
+              position: old.kind === req.kind ? 'keep' : 'main',
+            })
+          ).windowId;
         } catch (e) {
           if ((e as { code?: string }).code !== 'ENOWINDOW') throw e;
         }
-        drop(old); // the old page's port closes with its navigation; its slices go with it
+        drop(old); // main destroyed its window in the swap; its slices go with its port
       }
       if (!windowId) {
         windowId = (await mainRpc.call('dialogWindow.open', { ...spec, position: 'main' }))

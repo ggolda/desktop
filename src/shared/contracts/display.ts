@@ -35,6 +35,12 @@ export interface DisplayCreateOptions {
   paddingColor?: { r: number; g: number; b: number };
   /** Draw selection handles and guides (the main editor display). */
   drawUi?: boolean;
+  /**
+   * A new native display is black until the backend draws its first frame. With `settleMs` core keeps the
+   * display parked outside the window (invisible, still drawing) for that long after creating it, then
+   * moves it in place: the placeholder shows instead of a black flash. Default 0 (placed immediately).
+   */
+  settleMs?: number;
 }
 
 export interface DisplayState {

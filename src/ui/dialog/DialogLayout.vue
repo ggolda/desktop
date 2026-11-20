@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import DialogTitleBar from './DialogTitleBar.vue';
+import { signalDialogReady } from './ready';
+
+// Pages mount this layout only once their data is there (`v-if="state"`): the first complete render.
+// The window is hidden until `signalDialogReady` tells main it can be shown (ready.ts).
+onMounted(() => void signalDialogReady());
 
 /**
  * Legacy `ModalLayout` in a child window: title bar, optional fixed 200 px section (source preview),

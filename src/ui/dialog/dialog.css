@@ -267,3 +267,10 @@ select.sl-input option {
   padding: 0 10px;
   line-height: 28px;
 }
+
+/* The opening frame is final: no transition may animate during it (e.g. the autofocus ring). */
+html:not(.dlg-live) *,
+html:not(.dlg-live) *::before,
+html:not(.dlg-live) *::after {
+  transition: none !important;
+}

@@ -87,4 +87,12 @@ variables (`src/ui/theme.css`, values from the legacy night theme).
 
 ## Working method
 Coding is done by Sonnet subagents with narrow briefs. The main session writes the briefs and
-verifies the result (typecheck, lint, tests, smoke, review) before accepting it.
+verifies the result before accepting it.
+
+**Verification tiers** (keep runs short; every real-OBS run costs ~30 s of OBS start/stop):
+- Fast tier, while iterating: `npm run typecheck`, `npm run lint`, `npm test` (< 1 min).
+- Integration tier, **once at the end, only what the change touches**: `npm run smoke` for main,
+  core or startup changes; `test:collections` for collections or core media; `test:meters` for
+  audio; `test:dialogs` for dialogs. A UI-only change doesn't need the OBS suites.
+- Don't wait for obs64 to exit after every launch; check for leftover processes once at the end.
+- The main session reruns only the fast tier plus the one or two relevant integration tests.

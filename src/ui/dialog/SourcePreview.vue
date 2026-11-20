@@ -8,7 +8,13 @@ import { useResizeOcclusion } from './resize-occlusion';
  * Remount with `:key="sourceId"` to show another source.
  */
 const props = defineProps<{ sourceId: string }>();
-const { el } = useObsDisplay('horizontal', { sourceId: props.sourceId, drawUi: false });
+// `settleMs`: a new display is black until its first frame; core parks it outside the window for that
+// long (the placeholder colour shows meanwhile, the area is reserved at final size from the start).
+const { el } = useObsDisplay('horizontal', {
+  sourceId: props.sourceId,
+  drawUi: false,
+  settleMs: 150,
+});
 useResizeOcclusion();
 </script>
 

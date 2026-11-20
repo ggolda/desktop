@@ -49,6 +49,18 @@ describe('display', () => {
     expect(st.outputRegion).toEqual({ x: 0, y: 0, width: 640, height: 360 });
   });
 
+  it('settleMs: parked outside the window right after creation, moved in place when it elapsed', async () => {
+    const h = await ready();
+    const { client } = h.connect(1);
+    await client.call.display.create('d1', { settleMs: 60 }, view());
+    await until(() => h.backend.displaySet.has('d1'), 'created');
+    // parked: left of the window (x < 0), final size already
+    expect(h.backend.displaySet.get('d1')!.x).toBeLessThan(0);
+    expect(h.backend.displaySet.get('d1')!.w).toBe(960);
+    await until(() => h.backend.displaySet.get('d1')!.x === 15, 'moved in place', 2000);
+    expect(h.backend.displaySet.get('d1')).toEqual({ x: 15, y: 30, w: 960, h: 540 });
+  });
+
   it('coalesces bursts of views and skips unchanged ones', async () => {
     const h = await ready();
     const { client } = h.connect(1);

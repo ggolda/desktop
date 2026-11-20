@@ -418,3 +418,12 @@ learned, where we stopped, what's next.
   non-channel sources).
 - **Dialog cold open 84–125 ms** (budget 250). Memory: Electron 187 MB without dialog → 215 MB with
   Source Properties → 183 MB after closing (back to baseline).
+- **Dialog open made flicker-free** (verified: fast tier + test:dialogs incl. a first-frame check).
+  Causes recorded frame by frame: shown on ready-to-show while still empty, late fonts, focus-ring
+  transition, visible reload and resize on in-place replace, black native preview for ~40 ms. Fixes:
+  hidden until the page signals ready (data + fonts + painted, 300 ms fallback), opacity-0 show
+  against the compositor race, font preload, replace by a new hidden window then destroy the old one,
+  native preview parked off-window until drawn. First visible frame = final UI; click → visible
+  110–190 ms (≈30–50 ms later than before, in exchange for showing it complete).
+- Owner: test runs were too long (one agent took 35 min). New verification tiers in CLAUDE.md +
+  memory: fast tier while iterating, only the relevant OBS test once at the end.

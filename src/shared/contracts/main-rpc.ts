@@ -13,12 +13,21 @@ export interface MainRpcMethods {
 
   /**
    * Creates the dialog window, or reuses the existing one (legacy has ONE child window, created on demand
-   * and destroyed on close): then it behaves like `dialogWindow.replace`. Returns before the page loads;
-   * the page connects through the normal `window-port` path. See docs m1-dialogs-design.md 3.
+   * and destroyed on close): then it behaves like `dialogWindow.replace`. The window is created hidden at
+   * its final size and shown only when its page signals `dialog:ready` (data, fonts and first render done;
+   * fallback 300 ms after the page loaded); the call resolves after that. The page connects through the
+   * normal `window-port` path. See docs m1-dialogs-design.md 3.
    */
   'dialogWindow.open': { args: [spec: DialogWindowSpec]; result: { windowId: number } };
-  /** Swaps the content of an open dialog window (title, size, entry page). Fails with ENOWINDOW. */
-  'dialogWindow.replace': { args: [windowId: number, spec: DialogWindowSpec]; result: void };
+  /**
+   * Swaps an open dialog for the next one (title, size, entry page) without a visible reload: a NEW window
+   * is created hidden at the final geometry and, when its page is ready, shown while the old one is
+   * destroyed, two frames later. Resolves with the new window id, after the swap. Fails with ENOWINDOW.
+   */
+  'dialogWindow.replace': {
+    args: [windowId: number, spec: DialogWindowSpec];
+    result: { windowId: number };
+  };
   /** Closes (destroys) a dialog window and focuses the main window. No error when it is gone. */
   'dialogWindow.close': { args: [windowId: number]; result: void };
 

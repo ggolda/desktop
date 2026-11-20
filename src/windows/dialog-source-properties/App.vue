@@ -29,7 +29,7 @@ function close() {
 
 <template>
   <DialogLayout
-    v-if="state"
+    v-if="state && props"
     :title="title"
     :padded="false"
     :footer-height="state.data.chrome === 'close' ? 53 : 48"

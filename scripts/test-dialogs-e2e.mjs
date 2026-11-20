@@ -365,9 +365,11 @@ async function openAddSource(typeId, measure) {
     check(near(w, 900) && near(h, 700), `Add Source showcase size ${w}x${h} (expect 900x700)`);
   }
   await dlg.locator(`[data-testid=source-tile][data-id=${typeId}]`).first().click();
-  await dlg.locator('[data-testid=showcase-add]').click();
-  await dlg.waitForURL(/dialog-add-source/, { timeout: 10_000 });
-  return dlg;
+  await closing(() => dlg.locator('[data-testid=showcase-add]').click());
+  // in place replace = a NEW window (hidden until its page is ready) takes the place of the old one
+  const naming = await dialogPage('dialog-add-source');
+  await waitFor(() => dialogPages().length === 1, 'old dialog window destroyed');
+  return naming;
 }
 async function nameAndAdd(dlg, name, { forceNew = false } = {}) {
   await dlg.waitForSelector('[data-testid=add-source]');
@@ -378,10 +380,12 @@ async function nameAndAdd(dlg, name, { forceNew = false } = {}) {
   const input = dlg.locator('[data-testid=name-input]');
   await input.fill(name);
   await closing(() => dlg.locator('[data-testid=add-submit]').click());
-  await dlg.waitForURL(/dialog-source-properties/, { timeout: 15_000 });
-  await dlg.waitForSelector('[data-testid=property-form] [data-testid=prop-row]', {
+  const props = await dialogPage('dialog-source-properties');
+  await waitFor(() => dialogPages().length === 1, 'old dialog window destroyed');
+  await props.waitForSelector('[data-testid=property-form] [data-testid=prop-row]', {
     timeout: 15_000,
   });
+  return props;
 }
 
 // pixel analysis of a PNG inside a page (no PNG decoder dependency)
@@ -525,7 +529,7 @@ try {
 
   // 2 ------------------------------------------------------------------------------------------
   await step('2 image source: add, properties in place, set file', async () => {
-    const dlg = await openAddSource('image_source', 'Add Source (showcase)');
+    let dlg = await openAddSource('image_source', 'Add Source (showcase)');
 
     const [w, h] = await innerSize(dlg);
     check(near(w, 600) && near(h, 320), `Add Source naming size ${w}x${h} (expect 600x320)`);
@@ -533,10 +537,10 @@ try {
     const existing = await dlg.locator('[data-testid=existing-list] li').count();
     check(existing >= 1, `Add Existing Source list shown for an existing Image (${existing})`);
     const winBefore = dlg;
-    await nameAndAdd(dlg, IMG_NAME, { forceNew: true });
+    dlg = await nameAndAdd(dlg, IMG_NAME, { forceNew: true });
     check(
-      dialogPages().length === 1 && dialogPages()[0] === winBefore,
-      'properties replaces the dialog in place (same window)',
+      dialogPages().length === 1 && dialogPages()[0] === dlg && dlg !== winBefore,
+      'properties replaces the dialog in place (one window left, the new one)',
     );
     const [pw, ph] = await innerSize(dlg);
     check(near(pw, 600) && near(ph, 800), `Source Properties size ${pw}x${ph} (expect 600x800)`);
@@ -570,8 +574,8 @@ try {
 
   // 3 ------------------------------------------------------------------------------------------
   await step('3 color source: color and width', async () => {
-    const dlg = await openAddSource('color_source');
-    await nameAndAdd(dlg, COLOR_NAME);
+    let dlg = await openAddSource('color_source');
+    dlg = await nameAndAdd(dlg, COLOR_NAME);
     const row = await rowByName(COLOR_NAME);
     created.colorItemId = row?.id;
     await setField(dlg, '[data-testid=prop-color] [data-testid=color-hex]', '#00ff00ff');
@@ -631,8 +635,8 @@ try {
 
   // 4 ------------------------------------------------------------------------------------------
   await step('4 text source: text, font size, font family list', async () => {
-    const dlg = await openAddSource('text_gdiplus');
-    await nameAndAdd(dlg, TEXT_NAME);
+    let dlg = await openAddSource('text_gdiplus');
+    dlg = await nameAndAdd(dlg, TEXT_NAME);
     created.textItemId = (await rowByName(TEXT_NAME))?.id;
     const text0 = await dlg.locator('[data-testid=prop-text]').inputValue();
     check(text0 === TEXT_NAME, 'text defaults to the source name');
@@ -702,8 +706,8 @@ try {
 
   // 5 ------------------------------------------------------------------------------------------
   await step('5 browser source: custom frame rate toggle', async () => {
-    const dlg = await openAddSource('browser_source');
-    await nameAndAdd(dlg, BROWSER_NAME);
+    let dlg = await openAddSource('browser_source');
+    dlg = await nameAndAdd(dlg, BROWSER_NAME);
     created.browserItemId = (await rowByName(BROWSER_NAME))?.id;
     const toggle = dlg.locator('[data-testid=prop-fps_custom]');
     await toggle.waitFor();
@@ -879,6 +883,90 @@ try {
     }
     const worst = Math.max(...timings.map(t => t.ms));
     check(worst <= 250, `all dialog opens <= 250 ms (worst ${worst} ms)`);
+  });
+
+  // 10b: the first VISIBLE frame of a dialog is its complete UI -------------------------------------
+  // PrintWindow bursts (scripts/ui-reference/burst-titles.ps1) of the dialog window by title, started
+  // before the click. Windows are created hidden and shown only when the page painted its first complete
+  // render (src/ui/dialog/ready.ts), so the first frame that exists must not be the empty background.
+  await step('10b first visible frame is complete', async () => {
+    const burst = async (title, act) => {
+      const out = fs.mkdtempSync(path.join(dir, 'burst-'));
+      const ps = spawn(
+        'powershell',
+        [
+          '-NoProfile',
+          '-File',
+          path.join(root, 'scripts/ui-reference/burst-titles.ps1'),
+          '-TitlesCsv',
+          title,
+          '-OutDir',
+          out,
+          '-DurationMs',
+          '1100',
+        ],
+        { stdio: ['ignore', 'pipe', 'ignore'] },
+      );
+      await new Promise(res => ps.stdout.on('data', d => String(d).includes('READY') && res()));
+      const done = new Promise(res => ps.on('exit', res));
+      await sleep(150);
+      const dlg = await act();
+      const click = await main.evaluate(() => window.__tClick);
+      await done;
+      await closeLeftoverDialogs();
+      const frames = fs
+        .readFileSync(path.join(out, 'frames.csv'), 'utf8')
+        .trim()
+        .split(/\r?\n/)
+        .map(l => l.trim().split(','))
+        .map(c => ({ t: +c[0], hash: c[c.length - 3], colors: +c[c.length - 1] }));
+      void dlg;
+      if (!frames.length || !(frames[0].t > 0)) throw new Error('no frames captured');
+      return { click, frames };
+    };
+    // mean of 3 opens each: a single PrintWindow capture can race the compositor, a real regression
+    // (blank first frame) shows in every open
+    const cases = [
+      {
+        label: 'Name Scene',
+        title: 'Name Scene*',
+        open: async () => {
+          await main.locator('[data-testid=scene-add]').click();
+          return dialogPage('dialog-name-scene');
+        },
+        sameAsFinal: false, // the focused input blinks its caret
+      },
+      {
+        label: 'Add Source',
+        title: 'Add Source*',
+        open: async () => {
+          await main.locator('[data-testid=source-add]').click();
+          return dialogPage('dialog-source-showcase');
+        },
+        sameAsFinal: true,
+      },
+    ];
+    for (const c of cases) {
+      let complete = 0;
+      let identical = 0;
+      let worst = 0;
+      for (let i = 0; i < 3; i++) {
+        const { click, frames } = await burst(c.title, c.open);
+        const first = frames[0];
+        const last = frames[frames.length - 1];
+        if (first.colors >= 20) complete++;
+        if (first.hash === last.hash) identical++;
+        worst = Math.max(worst, first.t - click);
+      }
+      check(complete >= 2, `${c.label}: first visible frame is not blank (${complete}/3 opens)`);
+      if (c.sameAsFinal) {
+        check(
+          identical >= 2,
+          `${c.label}: first visible frame == final frame (${identical}/3 opens)`,
+        );
+      }
+      check(worst <= 250, `${c.label}: click -> first visible frame <= 250 ms (worst ${worst} ms)`);
+    }
   });
 
   // restart: the collection reloads ---------------------------------------------------------

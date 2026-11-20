@@ -23,6 +23,10 @@ export interface RebornBridge {
     /** Calls `cb` whenever the window is maximized or restored. Returns the unsubscribe function. */
     onMaximizedChange(cb: (maximized: boolean) => void): () => void;
   };
+  dialog: {
+    /** Dialog pages only: the first complete render is painted, main may show the (hidden) window. */
+    ready(): void;
+  };
   menu: {
     /** Shows a native menu at the cursor; resolves with the chosen item id, or null when dismissed. */
     popup(items: NativeMenuItem[]): Promise<string | null>;
